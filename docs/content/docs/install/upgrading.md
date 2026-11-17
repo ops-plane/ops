@@ -17,7 +17,8 @@ The database migrations are squashed into one schema, and the product is called 
 Each runner has its own token now, and the server no longer reads `RUNNER_TOKEN` (it warns when it's set). Before upgrading the runners, register each one's token with the new server, so its current `OPS_RUNNER_TOKEN` keeps working:
 
 ```sh
-echo "$RUNNER_TOKEN" | ops runner-token -from-stdin <runner-name>   # or -from-env <VAR>; -pool <pool> for another pool
+# or -from-env <VAR>; -pool <pool> for another pool
+echo "$RUNNER_TOKEN" | ops runner-token -from-stdin <runner-name>
 ```
 
 Then remove `RUNNER_TOKEN` from the server's environment. NixOS does this for `runnerTokenFile`; with Helm or Docker, run it once with the app's settings (e.g. `kubectl exec` / `docker exec` into the app). New runners get a token under **Settings → Runners** or with `ops runner-token <name>`. See the [changelog](https://github.com/ops-plane/ops/blob/master/CHANGELOG.md) for the other changes.

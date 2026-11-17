@@ -8,9 +8,14 @@ Set up a local environment first: see [Run from source]({{< relref "/docs/instal
 ## Tests
 
 ```sh
-just test                                    # in the nix dev shell: sqlc diff, gofmt, vet, all tests incl. DB tests
-just test-linux                              # the non-DB tests on Linux in docker, plain and with --init
-TEST_DATABASE_URL=postgres://… go test ./... # each DB test creates and drops its own database there (needs CREATEDB)
+# in the nix dev shell: sqlc diff, gofmt, vet, all tests incl. DB tests
+just test
+
+# the non-DB tests on Linux in docker, plain and with --init
+just test-linux
+
+# without nix: each DB test creates and drops its own database there (needs CREATEDB)
+TEST_DATABASE_URL=postgres://… go test ./...
 ```
 
 Some tests keep the docs honest: `internal/config` fails when an env var it reads is missing from the [option reference]({{< relref "/docs/config/reference" >}}), and `internal/http` when a route is missing from (or extra in) the [endpoint reference]({{< relref "/docs/endpoints" >}}). `TestAccessMatrix` needs a row for every route.
@@ -59,8 +64,11 @@ Repo settings, one-time:
 
 1. **General → Pull Requests:** allow only *rebase merging*, so every commit (and its `BREAKING CHANGE` footer) reaches release-please. Not merge commits: GitHub puts the PR title in their body, which release-please counts a second time.
    ```sh
-   gh api -X PATCH repos/ops-plane/ops -F allow_merge_commit=false -F allow_squash_merge=false \
-     -F allow_rebase_merge=true -F delete_branch_on_merge=true
+   gh api -X PATCH repos/ops-plane/ops \
+     -F allow_merge_commit=false \
+     -F allow_squash_merge=false \
+     -F allow_rebase_merge=true \
+     -F delete_branch_on_merge=true
    ```
 2. **Rules → Rulesets → New branch ruleset** for `master`: require a pull request, require the status checks `commits`, `lint`, `test`, `runner-linux`, `nix` and `nixos-test`, block force pushes, and restrict deletions. Don't require the docs check: it only runs when `docs/` changes.
 3. **Release PR checks:** a release PR opened with the default `GITHUB_TOKEN` gets no CI run (GitHub shows *action required*), so its required checks never pass. Add a fine-grained PAT, or a GitHub App token with *contents* and *pull requests* write access, as the secret `RELEASE_PLEASE_TOKEN`.

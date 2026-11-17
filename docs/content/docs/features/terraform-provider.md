@@ -25,7 +25,7 @@ It uses the [JSON API]({{< relref "/docs/endpoints#json-api" >}}), so the same a
      required_providers {
        ops = {
          source  = "ops-plane/ops"
-         version = "~> 0.2" # needs OPS 0.11.0 or later
+         version = "~> 0.3" # needs OPS 0.11.0 or later
        }
      }
    }

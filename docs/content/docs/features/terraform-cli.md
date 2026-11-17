@@ -8,17 +8,18 @@ aliases:
 Run Terraform on your own machine with OPS as the state backend, using Terraform's [`cloud` block](https://developer.hashicorp.com/terraform/cli/cloud/settings):
 
 ```sh
-terraform login ops.example.com     # browser: confirm "Authorize Terraform CLI"; the token is saved in ~/.terraform.d
+# in the browser, confirm "Authorize Terraform CLI"; the token is saved in ~/.terraform.d
+terraform login ops.example.com
 ```
 
 ```hcl
 terraform {
   cloud {
     hostname     = "ops.example.com"
-    organization = "ops"            # ORGANIZATION on the server
+    organization = "ops" # ORGANIZATION on the server
     workspaces {
       name    = "network-dev"
-      project = "networking"             # optional; else the default project
+      project = "networking" # optional; else the default project
     }
   }
 }
@@ -34,12 +35,17 @@ terraform {
 
 Like the registry, Terraform only uses HTTPS on a hostname with a dot. For local dev over HTTP, override discovery in a CLI config file (`~/.terraformrc`):
 
-```hcl
+```hcl {filename="~/.terraformrc"}
 host "ops.localhost:8080" {
   services = {
-    "tfe.v2"   = "http://ops.localhost:8080/api/v2/"
-    "login.v1" = { client = "terraform-cli", grant_types = ["authz_code"], ports = [10000, 10010],
-                   authz = "http://ops.localhost:8080/oauth/authorization", token = "http://ops.localhost:8080/oauth/token" }
+    "tfe.v2" = "http://ops.localhost:8080/api/v2/"
+    "login.v1" = {
+      client      = "terraform-cli"
+      grant_types = ["authz_code"]
+      ports       = [10000, 10010]
+      authz       = "http://ops.localhost:8080/oauth/authorization"
+      token       = "http://ops.localhost:8080/oauth/token"
+    }
   }
 }
 ```

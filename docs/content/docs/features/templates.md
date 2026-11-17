@@ -7,7 +7,7 @@ aliases:
 
 Each template is a JSON file that describes one existing Terraform module pinned to an approved `ref`, plus the inputs its form asks. This is the template file format 1.0:
 
-```json
+```json {filename="storage-account.json"}
 {
   "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "storage-account",
@@ -18,10 +18,37 @@ Each template is a JSON file that describes one existing Terraform module pinned
     "ref": "v1.0.0"
   },
   "inputs": [
-    { "name": "name", "label": "Account name", "help": "3-24 lowercase letters or digits, unique in Azure.", "type": "string", "required": true, "pattern": "^[a-z0-9]{3,24}$", "key": true },
-    { "name": "location", "label": "Region", "type": "select", "options": ["westeurope", { "value": "northeurope", "label": "North Europe" }], "default": "westeurope" },
-    { "name": "retention_days", "label": "Soft-delete retention (days)", "type": "number", "default": 7 },
-    { "name": "enable_versioning", "label": "Enable blob versioning", "type": "bool", "default": true }
+    {
+      "name": "name",
+      "label": "Account name",
+      "help": "3-24 lowercase letters or digits, unique in Azure.",
+      "type": "string",
+      "required": true,
+      "pattern": "^[a-z0-9]{3,24}$",
+      "key": true
+    },
+    {
+      "name": "location",
+      "label": "Region",
+      "type": "select",
+      "options": [
+        "westeurope",
+        { "value": "northeurope", "label": "North Europe" }
+      ],
+      "default": "westeurope"
+    },
+    {
+      "name": "retention_days",
+      "label": "Soft-delete retention (days)",
+      "type": "number",
+      "default": 7
+    },
+    {
+      "name": "enable_versioning",
+      "label": "Enable blob versioning",
+      "type": "bool",
+      "default": true
+    }
   ]
 }
 ```
@@ -75,9 +102,20 @@ Rows have **+ Add row** and **Remove**. For a template on a registry module the 
 give a field a label, help, a pattern, a default or dropdown options in `fields`, by name, like an input:
 
 ```json
-{ "name": "data_disks", "label": "Data disks", "type": "list", "fields": [
+{
+  "name": "data_disks",
+  "label": "Data disks",
+  "type": "list",
+  "fields": [
     { "name": "lun", "label": "LUN" },
-    { "name": "type", "label": "Disk type", "type": "select", "options": ["Standard_LRS", "Premium_LRS"] } ] }
+    {
+      "name": "type",
+      "label": "Disk type",
+      "type": "select",
+      "options": ["Standard_LRS", "Premium_LRS"]
+    }
+  ]
+}
 ```
 
 Optional fields left empty are left out, so Terraform's `optional()` default applies. Rows left wholly empty are
@@ -115,33 +153,74 @@ Since OPS 0.6, only format 1.0 loads; there is no compatibility mode. Three thin
 
 Before (0.x):
 
-```json
+```json {filename="vm.json"}
 {
   "id": "vm",
   "name": "Virtual machine",
-  "module": { "source": "git::https://example.com/modules.git//vm", "ref": "v1.0.0" },
+  "module": {
+    "source": "git::https://example.com/modules.git//vm",
+    "ref": "v1.0.0"
+  },
   "inputs": [
-    { "name": "vm_name", "label": "VM name: 1-64 letters or digits", "type": "string", "required": true, "pattern": "^[A-Za-z0-9]{1,64}$" },
-    { "name": "disks", "label": "Data disks", "type": "number", "default": "2" },
-    { "name": "backups", "label": "Backups", "type": "bool", "default": "true" },
-    { "name": "retention", "label": "Backup retention (days)", "type": "number", "default": "7", "show_if": { "input": "backups", "equals": ["true"] } }
+    {
+      "name": "vm_name",
+      "label": "VM name: 1-64 letters or digits",
+      "type": "string",
+      "required": true,
+      "pattern": "^[A-Za-z0-9]{1,64}$"
+    },
+    {
+      "name": "disks",
+      "label": "Data disks",
+      "type": "number",
+      "default": "2"
+    },
+    {
+      "name": "backups",
+      "label": "Backups",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "retention",
+      "label": "Backup retention (days)",
+      "type": "number",
+      "default": "7",
+      "show_if": { "input": "backups", "equals": ["true"] }
+    }
   ]
 }
 ```
 
 After (format 1.0):
 
-```json
+```json {filename="vm.json"}
 {
   "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "vm",
   "name": "Virtual machine",
-  "module": { "source": "git::https://example.com/modules.git//vm", "ref": "v1.0.0" },
+  "module": {
+    "source": "git::https://example.com/modules.git//vm",
+    "ref": "v1.0.0"
+  },
   "inputs": [
-    { "name": "vm_name", "label": "VM name", "help": "1-64 letters or digits", "type": "string", "required": true, "pattern": "^[A-Za-z0-9]{1,64}$" },
+    {
+      "name": "vm_name",
+      "label": "VM name",
+      "help": "1-64 letters or digits",
+      "type": "string",
+      "required": true,
+      "pattern": "^[A-Za-z0-9]{1,64}$"
+    },
     { "name": "disks", "label": "Data disks", "type": "number", "default": 2 },
     { "name": "backups", "label": "Backups", "type": "bool", "default": true },
-    { "name": "retention", "label": "Backup retention (days)", "type": "number", "default": 7, "show_if": { "input": "backups", "equals": [true] } }
+    {
+      "name": "retention",
+      "label": "Backup retention (days)",
+      "type": "number",
+      "default": 7,
+      "show_if": { "input": "backups", "equals": [true] }
+    }
   ]
 }
 ```
@@ -248,9 +327,31 @@ Add `"show_if": {"input": "<name>", "equals": ["<value>", ...]}` to an input to 
 A `select` option is either a string or an object `{"value": "...", "label": "..."}`: the form shows the label and Terraform gets the value.
 
 ```json
-{ "name": "os", "label": "Operating system", "type": "select", "options": [{ "label": "Windows", "value": "windows" }, { "label": "Linux", "value": "linux" }], "default": "linux" },
-{ "name": "admin_password", "label": "Admin password", "type": "string", "sensitive": true, "required": true, "show_if": { "input": "os", "equals": ["windows"] } },
-{ "name": "ssh_public_key", "label": "SSH public key", "type": "string", "required": true, "show_if": { "input": "os", "equals": ["linux"] } }
+{
+  "name": "os",
+  "label": "Operating system",
+  "type": "select",
+  "options": [
+    { "label": "Windows", "value": "windows" },
+    { "label": "Linux", "value": "linux" }
+  ],
+  "default": "linux"
+},
+{
+  "name": "admin_password",
+  "label": "Admin password",
+  "type": "string",
+  "sensitive": true,
+  "required": true,
+  "show_if": { "input": "os", "equals": ["windows"] }
+},
+{
+  "name": "ssh_public_key",
+  "label": "SSH public key",
+  "type": "string",
+  "required": true,
+  "show_if": { "input": "os", "equals": ["linux"] }
+}
 ```
 
 Things to know:
