@@ -3,7 +3,7 @@ title: About OPS
 weight: 1
 ---
 
-OPS is the **On-demand Provision Service**: infrastructure when someone needs it, provisioned with the Terraform modules your platform team already approved, without everyone having to write Terraform.
+The **On-demand Provisioning Service (OPS)** provisions infrastructure when someone needs it, with the Terraform modules your platform team already approved, without everyone having to write Terraform.
 
 Pick a template, name a **workspace** and fill in a form generated from JSON. An **OPS runner** plans the pinned Terraform module, you review the plan and confirm it, and a runner applies exactly that plan. You watch the output live in the browser, and the Terraform outputs show up when it's done.
 
