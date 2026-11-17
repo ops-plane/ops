@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // Template rollouts (app.StartRollout): the page of a template's uses and its rollout, and its actions.

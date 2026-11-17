@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // moduleNameRe is a Terraform module call name; "new" is the add route.

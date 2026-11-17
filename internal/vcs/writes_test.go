@@ -66,21 +66,21 @@ func TestGitHubWrites(t *testing.T) {
 	ts := rc.server(t)
 	c := NewClient(ts.Client()).Conn(GitHub, ts.URL, "tok")
 	ctx := context.Background()
-	if err := c.CreateBranch(ctx, "acme/cat", "opsolete/x", "base1"); err != nil {
+	if err := c.CreateBranch(ctx, "acme/cat", "ops/x", "base1"); err != nil {
 		t.Fatal(err)
 	}
-	if err := c.CommitFile(ctx, "acme/cat", "opsolete/x", "base1", "catalog/a.json", []byte("{}\n"), false, "Update"); err != nil {
+	if err := c.CommitFile(ctx, "acme/cat", "ops/x", "base1", "catalog/a.json", []byte("{}\n"), false, "Update"); err != nil {
 		t.Fatal(err)
 	}
-	url, err := c.OpenPR(ctx, "acme/cat", "opsolete/x", "main", "Update", "body")
+	url, err := c.OpenPR(ctx, "acme/cat", "ops/x", "main", "Update", "body")
 	if err != nil || url != "https://github.com/acme/cat/pull/7" {
 		t.Fatalf("pr: %q %v", url, err)
 	}
 	want := []string{
-		`POST /repos/acme/cat/git/refs {"ref":"refs/heads/opsolete/x","sha":"base1"}`,
+		`POST /repos/acme/cat/git/refs {"ref":"refs/heads/ops/x","sha":"base1"}`,
 		`GET /repos/acme/cat/contents/catalog/a.json?ref=base1 `, // the blob the edit is based on
-		`PUT /repos/acme/cat/contents/catalog/a.json {"branch":"opsolete/x","content":"e30K","message":"Update","sha":"blob1"}`,
-		`POST /repos/acme/cat/pulls {"base":"main","body":"body","head":"opsolete/x","title":"Update"}`,
+		`PUT /repos/acme/cat/contents/catalog/a.json {"branch":"ops/x","content":"e30K","message":"Update","sha":"blob1"}`,
+		`POST /repos/acme/cat/pulls {"base":"main","body":"body","head":"ops/x","title":"Update"}`,
 	}
 	if !reflect.DeepEqual(rc.got, want) {
 		t.Fatalf("requests:\n%s", strings.Join(rc.got, "\n"))
@@ -102,14 +102,14 @@ func TestAzureDevOpsWrites(t *testing.T) {
 	ts := rc.server(t)
 	c := NewClient(ts.Client()).Conn(AzureDevOps, ts.URL+"/org", "pat")
 	ctx := context.Background()
-	if err := c.CreateBranch(ctx, "Platform Team/cat", "opsolete/x", "base1"); err != nil {
+	if err := c.CreateBranch(ctx, "Platform Team/cat", "ops/x", "base1"); err != nil {
 		t.Fatal(err)
 	}
 	err := c.CommitFile(ctx, "Platform Team/cat", "main", "base1", "catalog/a.json", []byte("{}"), false, "Update")
 	if se, ok := errors.AsType[*StatusError](err); !ok || se.Code != http.StatusConflict {
 		t.Fatalf("a moved branch must be refused: %v", err)
 	}
-	url, err := c.OpenPR(ctx, "Platform Team/cat", "opsolete/x", "main", "Update", "body")
+	url, err := c.OpenPR(ctx, "Platform Team/cat", "ops/x", "main", "Update", "body")
 	if err != nil || url != ts.URL+"/org/Platform%20Team/_git/cat/pullrequest/12" {
 		t.Fatalf("pr: %q %v", url, err)
 	}
@@ -125,7 +125,7 @@ func TestAzureDevOpsWrites(t *testing.T) {
 		!strings.Contains(rc.got[0], `"newObjectId":"base1","oldObjectId":"0000000000000000000000000000000000000000"`) {
 		t.Fatalf("create branch: %s", rc.got[0])
 	}
-	if !strings.Contains(rc.got[2], `"sourceRefName":"refs/heads/opsolete/x"`) || !strings.Contains(rc.got[2], `"targetRefName":"refs/heads/main"`) {
+	if !strings.Contains(rc.got[2], `"sourceRefName":"refs/heads/ops/x"`) || !strings.Contains(rc.got[2], `"targetRefName":"refs/heads/main"`) {
 		t.Fatalf("pull request: %s", rc.got[2])
 	}
 }

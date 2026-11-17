@@ -8,7 +8,7 @@ import (
 )
 
 // SandboxArg is the subcommand that runs the job sandbox's setup helper (sandbox_linux.go):
-// `opsolete __sandbox [--bind dir]… [--probe | -- cmd args…]`.
+// `ops __sandbox [--bind dir]… [--probe | -- cmd args…]`.
 const SandboxArg = "__sandbox"
 
 // sandboxCommand is the helper running bin args in new namespaces, binds (the job's directories) kept writable.

@@ -14,9 +14,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 //go:embed views/*.html

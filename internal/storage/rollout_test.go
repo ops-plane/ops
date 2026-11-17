@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // A rollout moves all uses of a workspace in one run, which waits for confirmation despite auto-apply;

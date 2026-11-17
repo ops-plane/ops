@@ -12,10 +12,10 @@ import (
 
 	"gocloud.dev/blob"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/testdb"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/testdb"
 )
 
 // testEnv points the commands at a new test database, with the rest of the configuration at its
@@ -51,7 +51,7 @@ func audited(t *testing.T, store *storage.Store, action string) string {
 	return detail
 }
 
-// TestRotateKeyCLI (P2): `opsolete rotate-key` needs both keys and a usable STATE_STORE, re-seals
+// TestRotateKeyCLI (P2): `ops rotate-key` needs both keys and a usable STATE_STORE, re-seals
 // variables and state store files from SECRET_KEY_PREVIOUS to SECRET_KEY, and audits each rotation.
 func TestRotateKeyCLI(t *testing.T) {
 	oldKey, newKey := strings.Repeat("o", 32), strings.Repeat("n", 32)
@@ -74,7 +74,7 @@ func TestRotateKeyCLI(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer bucket.Close()
-	if err := (&app.App{Blobs: bucket, Secrets: old}).WriteBlob(ctx, "opsolete/x/1.tfstate", []byte("state")); err != nil {
+	if err := (&app.App{Blobs: bucket, Secrets: old}).WriteBlob(ctx, "ops/x/1.tfstate", []byte("state")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -109,7 +109,7 @@ func TestRotateKeyCLI(t *testing.T) {
 	if got, err := now.Open(vars[0].Value, app.VariableAD(vars[0])); err != nil || got != "s3cret" {
 		t.Fatalf("variable after the rotation: %q %v", got, err)
 	}
-	if b, err := (&app.App{Blobs: bucket, Secrets: now}).ReadBlob(ctx, "opsolete/x/1.tfstate"); err != nil || string(b) != "state" {
+	if b, err := (&app.App{Blobs: bucket, Secrets: now}).ReadBlob(ctx, "ops/x/1.tfstate"); err != nil || string(b) != "state" {
 		t.Fatalf("state file after the rotation: %q %v", b, err)
 	}
 	if err := rotateKey(log); err != nil {
@@ -120,13 +120,13 @@ func TestRotateKeyCLI(t *testing.T) {
 	}
 }
 
-// TestCreateToken (P3): `opsolete token <name>` prints a working registry token, and only it, on
+// TestCreateToken (P3): `ops token <name>` prints a working registry token, and only it, on
 // stdout and audits its creation without it.
 func TestCreateToken(t *testing.T) {
 	store := testEnv(t, strings.Repeat("k", 32))
 	args := os.Args
 	t.Cleanup(func() { os.Args = args })
-	os.Args = []string{"opsolete", "token", "ci-pipeline"}
+	os.Args = []string{"ops", "token", "ci-pipeline"}
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatal(err)
@@ -152,7 +152,7 @@ func TestCreateToken(t *testing.T) {
 	}
 }
 
-// TestRunnerTokenCLI: `opsolete runner-token` prints a new runner's token alone; -from-stdin registers the one on
+// TestRunnerTokenCLI: `ops runner-token` prints a new runner's token alone; -from-stdin registers the one on
 // stdin (refused when short) and replaces that runner's token and pool.
 func TestRunnerTokenCLI(t *testing.T) {
 	store := testEnv(t, strings.Repeat("k", 32))
@@ -222,7 +222,7 @@ func TestRunnerTokenCLI(t *testing.T) {
 	}
 }
 
-// TestAPITokenCLI: `opsolete api-token` prints a new service token alone; -from-env registers one generated
+// TestAPITokenCLI: `ops api-token` prints a new service token alone; -from-env registers one generated
 // elsewhere (refused when short), replacing that token's old value.
 func TestAPITokenCLI(t *testing.T) {
 	store := testEnv(t, strings.Repeat("k", 32))

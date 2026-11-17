@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/gcerrors"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // NewRun is a plan to queue: Action apply (re-plan with the workspace's inputs; Replace lists

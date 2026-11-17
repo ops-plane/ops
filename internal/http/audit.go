@@ -12,10 +12,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // secretFields are form fields whose values never go into the audit log, only that they were sent.

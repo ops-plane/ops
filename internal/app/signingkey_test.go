@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/secrets"
+	"github.com/ops-plane/ops/internal/secrets"
 )
 
 // The signing key behind state credentials and signed URLs is stored sealed and never changes:

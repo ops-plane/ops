@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // StateVersion is one saved Terraform state of a workspace; the file itself is in blob storage.

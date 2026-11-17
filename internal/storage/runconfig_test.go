@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // A run that changes the configuration plans a new version: ended before its apply started (discarded, canceled,
@@ -246,7 +246,7 @@ func TestRunFoundEntered(t *testing.T) {
 		t.Fatal(err)
 	}
 	r, err := s.SetWorkspaceTemplate(ctx, w.ID, WorkspaceTemplate{Name: "vm", TemplateID: "job-test", ModuleSource: "git::x", ModuleRef: "v1",
-		Inputs: map[string]any{"name": "vm1", "pw": map[string]any{"sealed": "opsolete:1:k:x"}}}, true, uuid.Nil)
+		Inputs: map[string]any{"name": "vm1", "pw": map[string]any{"sealed": "ops:1:k:x"}}}, true, uuid.Nil)
 	if err != nil {
 		t.Fatal(err)
 	}

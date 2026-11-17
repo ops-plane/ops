@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // TestTeamsVariablesRenameCancel covers workspace access by IdP group, variables and variable

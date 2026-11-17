@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // ErrVCSFetch: the provider didn't serve a run's commit (or the workspace may no longer use its

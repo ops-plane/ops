@@ -4,7 +4,7 @@
 INSERT INTO runners (name, pool, token_hash) VALUES (sqlc.arg(name)::text, sqlc.arg(pool)::text, sqlc.arg(token_hash)::bytea);
 
 -- name: RegisterRunner :exec
--- A token the operator generated (opsolete runner-token -from-stdin): the runner's, replacing its old one.
+-- A token the operator generated (ops runner-token -from-stdin): the runner's, replacing its old one.
 INSERT INTO runners (name, pool, token_hash) VALUES (sqlc.arg(name)::text, sqlc.arg(pool)::text, sqlc.arg(token_hash)::bytea)
 ON CONFLICT (name) DO UPDATE SET pool = EXCLUDED.pool, token_hash = EXCLUDED.token_hash;
 

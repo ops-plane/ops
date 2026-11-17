@@ -1,5 +1,5 @@
 # Documentation site: Hugo + Hextra. Preview with `just docs`; CI publishes it to GitHub Pages (.github/workflows/docs.yml).
-baseURL: https://opsolete.github.io/Opsolete/
+baseURL: https://ops-plane.github.io/ops/
 title: OPS
 enableGitInfo: true
 
@@ -25,7 +25,7 @@ menu:
         type: search
     - name: GitHub
       weight: 3
-      url: https://github.com/Opsolete/Opsolete
+      url: https://github.com/ops-plane/ops
       params:
         icon: github
 
@@ -38,4 +38,4 @@ params:
     displayPoweredBy: true
   editURL:
     enable: true
-    base: https://github.com/Opsolete/Opsolete/edit/master/docs/content
+    base: https://github.com/ops-plane/ops/edit/master/docs/content

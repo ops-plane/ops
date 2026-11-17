@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/auth/authtest"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/auth/authtest"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // TestAPIPlatform: what a Terraform provider does, over HTTP with a service token: create, read (by id, and by name

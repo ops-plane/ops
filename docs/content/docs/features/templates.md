@@ -9,7 +9,7 @@ Each template is a JSON file that describes one existing Terraform module pinned
 
 ```json
 {
-  "$schema": "https://opsolete.github.io/Opsolete/schema/template-1.json",
+  "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "storage-account",
   "name": "Azure Storage Account",
   "description": "A general-purpose v2 storage account with optional blob versioning.",
@@ -26,7 +26,7 @@ Each template is a JSON file that describes one existing Terraform module pinned
 }
 ```
 
-See also [`catalog/storage-account.json`](https://github.com/Opsolete/Opsolete/blob/master/catalog/storage-account.json).
+See also [`catalog/storage-account.json`](https://github.com/ops-plane/ops/blob/master/catalog/storage-account.json).
 
 ## Template format
 
@@ -95,7 +95,7 @@ storage-account.json: template storage-account, input name: unknown field "lable
 
 A catalog has at most 500 files of at most 256 KiB each, 8 MiB in total.
 
-**Editor support.** The format is published as a JSON Schema at <https://opsolete.github.io/Opsolete/schema/template-1.json>. With `"$schema"` in the file, as above, VS Code (and other editors with JSON Schema support) completes field names, shows each field's description, and marks unknown fields and wrongly typed defaults as you type; no extension or setting is needed. The builder writes `"$schema"` into every file it saves. OPS itself validates more than the schema can (for example that a `show_if` refers to an input above it), so a file the editor accepts can still fail to load with a clear error.
+**Editor support.** The format is published as a JSON Schema at <https://ops-plane.github.io/ops/schema/template-1.json>. With `"$schema"` in the file, as above, VS Code (and other editors with JSON Schema support) completes field names, shows each field's description, and marks unknown fields and wrongly typed defaults as you type; no extension or setting is needed. The builder writes `"$schema"` into every file it saves. OPS itself validates more than the schema can (for example that a `show_if` refers to an input above it), so a file the editor accepts can still fail to load with a clear error.
 
 Mark a `string` or `number` input `"sensitive": true` for passwords and keys. It is typed in a password field, stored encrypted with `SECRET_KEY`, shown as *(sensitive)*, left out of the audit log, and kept when left empty on reconfigure. When a form is refused (a typo elsewhere), what was typed is kept for an hour without being shown: sealed in the page, for the same user and form only. It can't have a `default`. A module variable declared `sensitive` in Terraform becomes a sensitive input when the template lists it. Values saved before an input was marked sensitive are encrypted the next time the template is configured.
 
@@ -133,7 +133,7 @@ After (format 1.0):
 
 ```json
 {
-  "$schema": "https://opsolete.github.io/Opsolete/schema/template-1.json",
+  "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "vm",
   "name": "Virtual machine",
   "module": { "source": "git::https://example.com/modules.git//vm", "ref": "v1.0.0" },
@@ -237,7 +237,7 @@ finds and imports them itself, and must be able to describe them as they are:
 - Optional parts (data disks, an auto-shutdown schedule, a security group) get a switch of their own (an
   `existing` field per data disk row, `auto_shutdown_existing`), so the user says which exist.
 
-The [example Windows VM module](https://github.com/Opsolete/terraform-modules-examples/tree/main/windows-vm) does this:
+The [example Windows VM module](https://github.com/ops-plane/terraform-modules-examples/tree/main/windows-vm) does this:
 `existing` imports the VM and its network interface, and its data disks (**existing** per disk in `data_disks`),
 schedule (`auto_shutdown_existing`) and security group (`nsg_existing`) have switches of their own.
 
@@ -266,7 +266,7 @@ In production, in a Git repository, so the app keeps no data on its disk:
 1. Add a [VCS provider]({{< relref "/docs/features/vcs-providers" >}}) whose token can read the repository.
 2. In **Settings → Template catalog** (admins), choose the connection, repository, branch and folder. The `*.json` files directly in that folder are the catalog.
 3. Choose what the [template builder]({{< relref "/docs/features/template-builder" >}}) does on save:
-   - **Open a pull request:** a new branch `opsolete/template-<id>-…` with the file and a pull request into the branch. The template changes once it's merged. Saving the template again while its pull request is open adds a commit to that pull request instead of opening another, replacing any change made to the file on its branch (it stays in the pull request's history). Removing a template always opens its own pull request. Works with branch protection.
+   - **Open a pull request:** a new branch `ops/template-<id>-…` with the file and a pull request into the branch. The template changes once it's merged. Saving the template again while its pull request is open adds a commit to that pull request instead of opening another, replacing any change made to the file on its branch (it stays in the pull request's history). Removing a template always opens its own pull request. Works with branch protection.
    - **Commit to the branch:** live right away. The branch must allow direct pushes.
    - **Off:** templates are only edited in Git; a read-only token is enough.
 

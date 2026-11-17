@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Registry modules can publish from a repository: its semver tags become versions (syncTags, vcssync.go), now

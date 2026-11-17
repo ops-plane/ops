@@ -1,4 +1,4 @@
-# NixOS module: services.opsolete (server) and services.opsolete.runner.
+# NixOS module: services.ops (server) and services.ops.runner.
 # Secrets are *File options holding a path (e.g. config.sops.secrets.<name>.path). They reach the
 # server via systemd LoadCredential, the runner via a root launcher, so they never enter the Nix store
 # or the unit's Environment=, and the files may stay root-owned (sops-nix's default).
@@ -9,7 +9,7 @@ self: {
   ...
 }: let
   inherit (lib) mkOption mkEnableOption mkIf optional optionalAttrs types;
-  cfg = config.services.opsolete;
+  cfg = config.services.ops;
   rcfg = cfg.runner;
 
   nullOr = t: default: description:
@@ -21,7 +21,7 @@ self: {
     mkOption {
       type = types.nullOr types.str; # str, not path: a ./literal would be copied into the world-readable store
       default = null;
-      example = "/run/secrets/opsolete-secret-key";
+      example = "/run/secrets/ops-secret-key";
       inherit description;
     };
   secretFiles = description:
@@ -32,22 +32,22 @@ self: {
       inherit description;
     };
 
-  opsolete = lib.getExe' cfg.package "opsolete";
+  ops = lib.getExe' cfg.package "ops";
   # `$(<f)` drops the trailing newline that sops values and editors leave.
   exportSecrets = pathOf: secrets: lib.concatLines (lib.mapAttrsToList (k: f: ''export ${k}="$(< "${pathOf k f}")"'') secrets);
   launcher = name: secrets: args:
     pkgs.writeShellScript name ''
       set -euo pipefail
       ${exportSecrets (k: _: "$CREDENTIALS_DIRECTORY/${k}") secrets}
-      exec ${opsolete} ${args}
+      exec ${ops} ${args}
     '';
   credentials = lib.mapAttrsToList (k: f: "${k}:${f}");
   # The runner reads its secret files as root, then drops to its user. Not LoadCredential: job code runs
   # as that user and could read /run/credentials/… (the env is hidden from jobs, the directory isn't).
-  runnerLauncher = pkgs.writeShellScript "opsolete-runner-start" ''
+  runnerLauncher = pkgs.writeShellScript "ops-runner-start" ''
     set -euo pipefail
     ${exportSecrets (_: f: f) runnerSecrets}
-    exec ${pkgs.util-linux}/bin/setpriv --reuid=opsolete-runner --regid=opsolete-runner --clear-groups -- ${opsolete} runner
+    exec ${pkgs.util-linux}/bin/setpriv --reuid=ops-runner --regid=ops-runner --clear-groups -- ${ops} runner
   '';
   dropNulls = lib.filterAttrs (_: v: v != null);
   joinOrNull = l:
@@ -61,7 +61,7 @@ self: {
       PUBLIC_URL = cfg.publicUrl;
       DATABASE_URL =
         if cfg.database.createLocally
-        then "postgres:///opsolete?host=/run/postgresql"
+        then "postgres:///ops?host=/run/postgresql"
         else cfg.database.url;
       STATE_STORE = cfg.stateStore;
       TEMPLATES_DIR = cfg.templatesDir;
@@ -95,13 +95,13 @@ self: {
     if rcfg.name != null
     then rcfg.name
     else config.networking.hostName;
-  registerRunner = pkgs.writeShellScript "opsolete-register-runner" ''
+  registerRunner = pkgs.writeShellScript "ops-register-runner" ''
     set -euo pipefail
     ${exportSecrets (k: _: "$CREDENTIALS_DIRECTORY/${k}") serverSecrets}
-    exec ${opsolete} runner-token -from-stdin -pool ${lib.escapeShellArg rcfg.pool} ${lib.escapeShellArg runnerName} < "$CREDENTIALS_DIRECTORY/runner-token"
+    exec ${ops} runner-token -from-stdin -pool ${lib.escapeShellArg rcfg.pool} ${lib.escapeShellArg runnerName} < "$CREDENTIALS_DIRECTORY/runner-token"
   '';
 
-  stateDir = "/var/lib/opsolete-runner";
+  stateDir = "/var/lib/ops-runner";
   runnerEnv =
     dropNulls {
       OPS_SERVER_URL = rcfg.serverUrl;
@@ -126,15 +126,15 @@ self: {
       OPS_INFRACOST_API_KEY = rcfg.infracost.apiKeyFile;
     };
 
-  # `opsolete-admin token <name>` (and any other subcommand) with the server's config.
-  admin = pkgs.writeShellScriptBin "opsolete-admin" ''
+  # `ops-admin token <name>` (and any other subcommand) with the server's config.
+  admin = pkgs.writeShellScriptBin "ops-admin" ''
     set -euo pipefail
-    [ "$(id -u)" = 0 ] || { echo "opsolete-admin: run as root (it reads the secret files)" >&2; exit 1; }
+    [ "$(id -u)" = 0 ] || { echo "ops-admin: run as root (it reads the secret files)" >&2; exit 1; }
     ${lib.concatLines (lib.mapAttrsToList (k: v: "export ${k}=${lib.escapeShellArg v}") serverEnv)}
     ${exportSecrets (_: f: f) serverSecrets}
     cd /
-    # runuser keeps the environment; as user opsolete, postgres peer auth matches the local role
-    exec ${pkgs.util-linux}/bin/runuser -u opsolete -- ${opsolete} "$@"
+    # runuser keeps the environment; as user ops, postgres peer auth matches the local role
+    exec ${pkgs.util-linux}/bin/runuser -u ops -- ${ops} "$@"
   '';
 
   hardening = {
@@ -160,13 +160,13 @@ self: {
     RestartSec = 10;
   };
 in {
-  options.services.opsolete = {
+  options.services.ops = {
     enable = mkEnableOption "the OPS server (web UI, module registry, runner API)";
     package = mkOption {
       type = types.package;
       default = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      defaultText = lib.literalExpression "opsolete.packages.\${system}.default";
-      description = "OPS package; also used by the runner and opsolete-admin.";
+      defaultText = lib.literalExpression "ops.packages.\${system}.default";
+      description = "OPS package; also used by the runner and ops-admin.";
     };
     listenAddress = mkOption {
       type = types.str;
@@ -185,20 +185,20 @@ in {
     };
     publicUrl = mkOption {
       type = types.str;
-      example = "https://opsolete.example.com";
+      example = "https://ops.example.com";
       description = "PUBLIC_URL: how browsers and Terraform reach the app. Its host (needs a dot) is the registry hostname; the OIDC callback is PUBLIC_URL/auth/callback.";
     };
     secretKeyFile = mkOption {
       type = types.str;
-      example = "/run/secrets/opsolete-secret-key";
+      example = "/run/secrets/ops-secret-key";
       description = "File with SECRET_KEY (32+ characters, e.g. `openssl rand -base64 32`). Encrypts state, plans, variables and VCS tokens and signs the audit log: back it up, losing it loses all state.";
     };
-    runnerTokenFile = secretFile "File with the token of this host's runner (32+ characters, e.g. `openssl rand -hex 32`): the server registers it at start as runner `runner.name` (default: the hostname) in pool `runner.pool`, and the runner's tokenFile defaults to it. Runners elsewhere get their own token: `opsolete-admin runner-token <name>`, or Settings → Runners.";
+    runnerTokenFile = secretFile "File with the token of this host's runner (32+ characters, e.g. `openssl rand -hex 32`): the server registers it at start as runner `runner.name` (default: the hostname) in pool `runner.pool`, and the runner's tokenFile defaults to it. Runners elsewhere get their own token: `ops-admin runner-token <name>`, or Settings → Runners.";
     database = {
       createLocally = mkOption {
         type = types.bool;
         default = true;
-        description = "Create a local PostgreSQL database and role `opsolete`, reached over the unix socket with peer auth (no password).";
+        description = "Create a local PostgreSQL database and role `ops`, reached over the unix socket with peer auth (no password).";
       };
       url = nullOr types.str null "DATABASE_URL without a password (createLocally = false). Use urlFile when it holds credentials.";
       urlFile = secretFile "File with DATABASE_URL, for URLs with a password (createLocally = false).";
@@ -206,15 +206,15 @@ in {
     stateStore = mkOption {
       type = types.str;
       # no_tmp_dir: PrivateTmp puts /tmp on another mount, so fileblob's rename from /tmp fails (EXDEV)
-      default = "file:///var/lib/opsolete/state?create_dir=1&metadata=skip&no_tmp_dir=1";
+      default = "file:///var/lib/ops/state?create_dir=1&metadata=skip&no_tmp_dir=1";
       example = "azblob://tfstate";
-      description = "STATE_STORE (Go CDK blob URL). Cloud credentials go in `secretFiles` (secrets) or `environment` (e.g. AZURE_STORAGE_ACCOUNT). A file:// URL must be under /var/lib/opsolete (the only writable path) and needs `no_tmp_dir=1`.";
+      description = "STATE_STORE (Go CDK blob URL). Cloud credentials go in `secretFiles` (secrets) or `environment` (e.g. AZURE_STORAGE_ACCOUNT). A file:// URL must be under /var/lib/ops (the only writable path) and needs `no_tmp_dir=1`.";
     };
     templatesDir = nullOr types.str null "TEMPLATES_DIR, a local template folder. null: none; keep the templates in a Git repository instead (Settings → Templates).";
     templateEditor = mkOption {
       type = types.bool;
       default = false;
-      description = "TEMPLATE_EDITOR (development): the admin template builder writes into templatesDir (must then be a directory writable by user opsolete), and module uploads are on. Not needed for a Git template catalog, whose editor is set up in Settings → Templates.";
+      description = "TEMPLATE_EDITOR (development): the admin template builder writes into templatesDir (must then be a directory writable by user ops), and module uploads are on. Not needed for a Git template catalog, whose editor is set up in Settings → Templates.";
     };
     deployments.enable = mkOption {
       type = types.bool;
@@ -228,7 +228,7 @@ in {
     };
     organization = mkOption {
       type = types.str;
-      default = "opsolete";
+      default = "ops";
       description = "ORGANIZATION: the one organization Terraform's cloud block may name.";
     };
     staleLockTimeout = mkOption {
@@ -284,9 +284,9 @@ in {
       tokenFile = mkOption {
         type = types.nullOr types.str;
         default = cfg.runnerTokenFile;
-        defaultText = lib.literalExpression "config.services.opsolete.runnerTokenFile";
-        example = "/run/secrets/opsolete-runner-token";
-        description = "File with OPS_RUNNER_TOKEN: the runner's own token (runnerTokenFile on the server's host, else from `opsolete-admin runner-token <name>`).";
+        defaultText = lib.literalExpression "config.services.ops.runnerTokenFile";
+        example = "/run/secrets/ops-runner-token";
+        description = "File with OPS_RUNNER_TOKEN: the runner's own token (runnerTokenFile on the server's host, else from `ops-admin runner-token <name>`).";
       };
       name = nullOr types.str null "OPS_RUNNER_NAME, and the name runnerTokenFile is registered with. null: the hostname.";
       pool = mkOption {
@@ -346,34 +346,34 @@ in {
             if cfg.database.createLocally
             then cfg.database.url == null && cfg.database.urlFile == null
             else (cfg.database.url == null) != (cfg.database.urlFile == null);
-          message = "services.opsolete.database: set exactly one of url / urlFile, and only with createLocally = false";
+          message = "services.ops.database: set exactly one of url / urlFile, and only with createLocally = false";
         }
         {
           assertion = cfg.templateEditor -> cfg.templatesDir != null;
-          message = "services.opsolete.templateEditor writes into templatesDir: set it to a writable directory";
+          message = "services.ops.templateEditor writes into templatesDir: set it to a writable directory";
         }
       ];
 
-      users.users.opsolete = {
+      users.users.ops = {
         isSystemUser = true;
-        group = "opsolete";
+        group = "ops";
       };
-      users.groups.opsolete = {};
+      users.groups.ops = {};
       environment.systemPackages = [admin];
       networking.firewall.allowedTCPPorts = optional cfg.openFirewall cfg.port;
 
       services.postgresql = mkIf cfg.database.createLocally {
         enable = true;
-        ensureDatabases = ["opsolete"];
+        ensureDatabases = ["ops"];
         ensureUsers = [
           {
-            name = "opsolete";
+            name = "ops";
             ensureDBOwnership = true;
           }
         ];
       };
 
-      systemd.services.opsolete = {
+      systemd.services.ops = {
         description = "OPS";
         wantedBy = ["multi-user.target"];
         wants = ["network-online.target"];
@@ -384,10 +384,10 @@ in {
           hardening
           // {
             ExecStartPre = optional (cfg.runnerTokenFile != null) registerRunner;
-            ExecStart = launcher "opsolete-start" serverSecrets "";
-            User = "opsolete";
-            Group = "opsolete";
-            StateDirectory = "opsolete";
+            ExecStart = launcher "ops-start" serverSecrets "";
+            User = "ops";
+            Group = "ops";
+            StateDirectory = "ops";
             LoadCredential = credentials serverSecrets ++ optional (cfg.runnerTokenFile != null) "runner-token:${cfg.runnerTokenFile}";
             ReadWritePaths = optional cfg.templateEditor cfg.templatesDir;
             AmbientCapabilities = optional (cfg.port < 1024) "CAP_NET_BIND_SERVICE";
@@ -403,21 +403,21 @@ in {
       assertions = [
         {
           assertion = rcfg.tokenFile != null;
-          message = "services.opsolete.runner.tokenFile: set it, or services.opsolete.runnerTokenFile when the server runs on this host";
+          message = "services.ops.runner.tokenFile: set it, or services.ops.runnerTokenFile when the server runs on this host";
         }
       ];
       # its own user: module code runs as it, so it must not share the server's (database) identity
-      users.users.opsolete-runner = {
+      users.users.ops-runner = {
         isSystemUser = true;
-        group = "opsolete-runner";
+        group = "ops-runner";
       };
-      users.groups.opsolete-runner = {};
+      users.groups.ops-runner = {};
 
-      systemd.services.opsolete-runner = {
+      systemd.services.ops-runner = {
         description = "OPS runner";
         wantedBy = ["multi-user.target"];
         wants = ["network-online.target"];
-        after = ["network-online.target"] ++ optional cfg.enable "opsolete.service";
+        after = ["network-online.target"] ++ optional cfg.enable "ops.service";
         environment = runnerEnv;
         path = [pkgs.git pkgs.openssh pkgs.bash] ++ rcfg.extraPackages;
         serviceConfig =
@@ -425,9 +425,9 @@ in {
           // {
             # "!": started as root (User= still owns StateDirectory); runnerLauncher drops to it itself
             ExecStart = "!${runnerLauncher}";
-            User = "opsolete-runner"; # not DynamicUser: that fails to start together with PrivatePIDs
-            Group = "opsolete-runner";
-            StateDirectory = ["opsolete-runner" "opsolete-runner/plugin-cache"];
+            User = "ops-runner"; # not DynamicUser: that fails to start together with PrivatePIDs
+            Group = "ops-runner";
+            StateDirectory = ["ops-runner" "ops-runner/plugin-cache"];
             # own PID namespace: jobs see no other processes of the host (the runner kills what a job leaves running itself)
             PrivatePIDs = true;
             # the job sandbox's namespaces (OPS_SANDBOX); no others

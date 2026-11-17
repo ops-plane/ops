@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 func TestRunPhases(t *testing.T) {

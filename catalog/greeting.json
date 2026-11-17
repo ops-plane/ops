@@ -1,10 +1,10 @@
 {
-  "$schema": "https://opsolete.github.io/Opsolete/schema/template-1.json",
+  "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "greeting",
   "name": "Greeting (example)",
   "description": "Example template on the registry's examples/greeting module. Needs no cloud credentials.",
   "module": {
-    "source": "opsolete.localhost:8080/examples/greeting/terraform",
+    "source": "ops.localhost:8080/examples/greeting/terraform",
     "ref": "1.1.0"
   },
   "inputs": [

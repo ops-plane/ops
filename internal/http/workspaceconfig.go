@@ -11,10 +11,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // Workspaces' own configuration: none (empty, or holding only variables, or only added templates),

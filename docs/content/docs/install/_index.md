@@ -5,7 +5,7 @@ aliases:
   - /docs/operations/deployment/
 ---
 
-The app and the runner are the same binary, shipped as two images: `ghcr.io/opsolete/opsolete-app` and `ghcr.io/opsolete/opsolete-runner`.
+The app and the runner are the same binary, shipped as two images: `ghcr.io/ops-plane/ops-app` and `ghcr.io/ops-plane/ops-runner`.
 
 Every way to deploy runs the same two parts: the **app** (web UI, module registry, state backend, runner API) and one or more **runners** (they run Terraform and reach the app over HTTP(S), so they need no database access and no open ports). The app needs:
 
@@ -14,7 +14,7 @@ Every way to deploy runs the same two parts: the **app** (web UI, module registr
 - `STATE_STORE`: where state files go, e.g. `azblob://tfstate`, `s3://tfstate?region=eu-west-1` or `gs://tfstate`.
 - A login: OIDC (`OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`), and `ADMIN_EMAILS` or `ADMIN_GROUPS` for the first admin.
 
-Each runner has its own token, its `OPS_RUNNER_TOKEN`: create one with `opsolete runner-token <name>` (with the app's settings) or under **Settings → Runners**. See [Runners]({{< relref "/docs/config/runners" >}}).
+Each runner has its own token, its `OPS_RUNNER_TOKEN`: create one with `ops runner-token <name>` (with the app's settings) or under **Settings → Runners**. See [Runners]({{< relref "/docs/config/runners" >}}).
 
 Every setting is listed in the [option reference]({{< relref "/docs/config/reference" >}}).
 

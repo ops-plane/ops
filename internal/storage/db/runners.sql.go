@@ -51,7 +51,7 @@ type RegisterRunnerParams struct {
 	TokenHash []byte
 }
 
-// A token the operator generated (opsolete runner-token -from-stdin): the runner's, replacing its old one.
+// A token the operator generated (ops runner-token -from-stdin): the runner's, replacing its old one.
 func (q *Queries) RegisterRunner(ctx context.Context, arg RegisterRunnerParams) error {
 	_, err := q.db.Exec(ctx, registerRunner, arg.Name, arg.Pool, arg.TokenHash)
 	return err

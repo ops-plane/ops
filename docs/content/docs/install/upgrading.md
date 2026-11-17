@@ -17,10 +17,10 @@ The database migrations are squashed into one schema, and the product is called 
 Each runner has its own token now, and the server no longer reads `RUNNER_TOKEN` (it warns when it's set). Before upgrading the runners, register each one's token with the new server, so its current `OPS_RUNNER_TOKEN` keeps working:
 
 ```sh
-echo "$RUNNER_TOKEN" | opsolete runner-token -from-stdin <runner-name>   # or -from-env <VAR>; -pool <pool> for another pool
+echo "$RUNNER_TOKEN" | ops runner-token -from-stdin <runner-name>   # or -from-env <VAR>; -pool <pool> for another pool
 ```
 
-Then remove `RUNNER_TOKEN` from the server's environment. NixOS does this for `runnerTokenFile`; with Helm or Docker, run it once with the app's settings (e.g. `kubectl exec` / `docker exec` into the app). New runners get a token under **Settings → Runners** or with `opsolete runner-token <name>`. See the [changelog](https://github.com/Opsolete/Opsolete/blob/master/CHANGELOG.md) for the other changes.
+Then remove `RUNNER_TOKEN` from the server's environment. NixOS does this for `runnerTokenFile`; with Helm or Docker, run it once with the app's settings (e.g. `kubectl exec` / `docker exec` into the app). New runners get a token under **Settings → Runners** or with `ops runner-token <name>`. See the [changelog](https://github.com/ops-plane/ops/blob/master/CHANGELOG.md) for the other changes.
 
 ## To 0.6 (from 0.5 or older)
 
@@ -32,7 +32,7 @@ Then remove `RUNNER_TOKEN` from the server's environment. NixOS does this for `r
 4. **Everyone signs in once.** Sessions are stored in the database now; old session cookies don't work. Users log in again, and `terraform login` again for the CLI.
 5. **Who creates workspaces.** Only admins and groups with `operate` on a project create workspaces in it, the default project included (UI and `terraform init`). To let everyone create workspaces as before, grant their group `operate` on the default project (*Projects › default › Settings › Team access*). A workspace's *Settings* now need `operate`, and readers get `403` (not `404`) on a state version's values.
 6. **Admins:** `ADMIN_EMAILS` matches only the `email` claim, no longer `preferred_username`. Entra ID users without an `email` claim need `ADMIN_GROUPS`.
-7. **Rotating `SECRET_KEY`** works differently: restart with `SECRET_KEY_PREVIOUS`, run `opsolete rotate-key` while the servers run, then drop the old key. See [Rotating it]({{< relref "/docs/config/secret-key#rotating-it" >}}).
+7. **Rotating `SECRET_KEY`** works differently: restart with `SECRET_KEY_PREVIOUS`, run `ops rotate-key` while the servers run, then drop the old key. See [Rotating it]({{< relref "/docs/config/secret-key#rotating-it" >}}).
 
 New settings ([option reference]({{< relref "/docs/config/reference" >}})):
 

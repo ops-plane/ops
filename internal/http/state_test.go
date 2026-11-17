@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Remote state sharing: a run of another workspace may read (never write or lock) a state that is

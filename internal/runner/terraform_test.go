@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/config"
+	"github.com/ops-plane/ops/internal/config"
 )
 
 func TestLostLeaseStopsTerraform(t *testing.T) {

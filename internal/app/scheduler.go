@@ -15,7 +15,7 @@ import (
 // session ends (crash, lost connection, shutdown), and another replica takes over at its next try.
 // Local jobs keep per-replica state (the in-memory template catalog) and run on every replica.
 
-// schedulerLock is the advisory lock id of the leader ("opsolete" in ASCII).
+// schedulerLock is the advisory lock id of the leader ("ops" in ASCII).
 const schedulerLock int64 = 0x6f70736f6c657465
 
 type leadKey struct{}
@@ -114,7 +114,7 @@ func (s *Scheduler) hold(ctx context.Context, conn **pgx.Conn, leading bool) (bo
 	defer cancel()
 	if *conn == nil {
 		cfg := s.DB.Copy()
-		cfg.RuntimeParams["application_name"] = "opsolete-scheduler"
+		cfg.RuntimeParams["application_name"] = "ops-scheduler"
 		// Postgres notices a vanished leader (node lost, no FIN) in ~25 s instead of the OS default of hours.
 		cfg.RuntimeParams["tcp_keepalives_idle"], cfg.RuntimeParams["tcp_keepalives_interval"], cfg.RuntimeParams["tcp_keepalives_count"] = "10", "5", "3"
 		c, err := pgx.ConnectConfig(ctx, cfg)

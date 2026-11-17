@@ -9,9 +9,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // The template catalog can come from a Git repository instead of TEMPLATES_DIR (Settings → Templates):
@@ -239,7 +239,7 @@ func (a *App) writeTemplate(ctx context.Context, id, name string, body []byte, b
 		}
 	}
 	if tc.Mode == "pr" { // shortcut: a branch whose commit then fails is left behind; delete it in the provider
-		branch = "opsolete/template-" + id + "-" + strings.ToLower(rand.Text()[:6])
+		branch = "ops/template-" + id + "-" + strings.ToLower(rand.Text()[:6])
 		if err := c.CreateBranch(ctx, tc.Repo, branch, base); err != nil {
 			return "", tokenHint(fmt.Errorf("create branch %s: %w", branch, err))
 		}
@@ -271,7 +271,7 @@ func tokenHint(err error) error {
 	return fmt.Errorf("the provider refused the connection's token: it may be expired, revoked or lack write access. Replace it with Change access token in Settings → Templates, then try again. (%w)", err)
 }
 
-// templatePR finds the open pull request a save of template id opened: its opsolete/template-<id>-
+// templatePR finds the open pull request a save of template id opened: its ops/template-<id>-
 // branch, whose description (the commit message) names the template. Removals are left alone.
 // Pull requests opened before branches had the full id aren't found: a save then opens a new one.
 func templatePR(ctx context.Context, c vcs.Conn, tc storage.TemplateCatalog, id string) (vcs.PullRequest, bool, error) {
@@ -280,7 +280,7 @@ func templatePR(ctx context.Context, c vcs.Conn, tc storage.TemplateCatalog, id 
 		return vcs.PullRequest{}, false, err
 	}
 	for _, pr := range prs {
-		if strings.HasPrefix(pr.Branch, "opsolete/template-"+id+"-") && strings.Contains(pr.Body, "(template "+id+").") &&
+		if strings.HasPrefix(pr.Branch, "ops/template-"+id+"-") && strings.Contains(pr.Body, "(template "+id+").") &&
 			!strings.HasPrefix(pr.Body, "Remove ") {
 			return pr, true, nil
 		}

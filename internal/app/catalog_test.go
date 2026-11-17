@@ -8,10 +8,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 var testRegistry = &registry.Registry{PublicURL: &url.URL{Scheme: "https", Host: "ops.example.com"}, Key: []byte("test-key")}

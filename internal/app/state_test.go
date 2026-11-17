@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // A run's state credential: only its own run's token, only while it works, writes only while

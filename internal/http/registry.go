@@ -10,10 +10,10 @@ import (
 
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Terraform registry protocol (modules.v1): https://developer.hashicorp.com/terraform/internals/module-registry-protocol

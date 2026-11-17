@@ -11,7 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/testdb"
+	"github.com/ops-plane/ops/internal/testdb"
 )
 
 var discard = slog.New(slog.NewTextHandler(io.Discard, nil))

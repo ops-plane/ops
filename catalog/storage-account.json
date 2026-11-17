@@ -1,5 +1,5 @@
 {
-  "$schema": "https://opsolete.github.io/Opsolete/schema/template-1.json",
+  "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "storage-account",
   "name": "Azure Storage Account",
   "description": "A general-purpose v2 storage account with optional blob versioning.",

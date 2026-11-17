@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage/db"
-	"github.com/opsolete/opsolete/internal/testdb"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage/db"
+	"github.com/ops-plane/ops/internal/testdb"
 )
 
 // testStore returns a migrated store on a database of t's own (testdb), or skips without TEST_DATABASE_URL.

@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // Terraform http state backend, one state per workspace (deployment):

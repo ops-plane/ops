@@ -10,13 +10,13 @@ import (
 
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/testdb"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/testdb"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // TestRealVCS reads real repositories (only with OPS_VCS_E2E=1 and the tokens below; read-only: no push, no
@@ -49,7 +49,7 @@ func TestRealVCS(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	public, _ := url.Parse("https://opsolete.test")
+	public, _ := url.Parse("https://ops.test")
 	a := &app.App{Store: store, Blobs: memblob.OpenBucket(nil), Secrets: keys, Templates: tpls, Log: slog.New(slog.DiscardHandler),
 		Registry: &registry.Registry{PublicURL: public, Key: []byte("e2e-registry-key")}, RegistryEnabled: true, VCSEnabled: true,
 		VCS: vcs.NewClient(nil)}

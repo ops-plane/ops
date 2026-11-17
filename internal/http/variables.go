@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Variables: the workspace's own (operate access) and variable sets (admins); the rules are app's.

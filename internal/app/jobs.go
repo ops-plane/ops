@@ -22,10 +22,10 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/gcerrors"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 const (
@@ -47,7 +47,7 @@ var errNoArtifact = reason{ErrNotFound, "no such artifact"}
 // config in the saved plan, so the apply phase authenticates with what the plan phase used.
 func (a *App) StateToken(workspaceID, runID uuid.UUID) string {
 	m := hmac.New(sha256.New, a.Registry.Key)
-	m.Write([]byte("opsolete state\x00" + workspaceID.String() + "\x00" + runID.String()))
+	m.Write([]byte("ops state\x00" + workspaceID.String() + "\x00" + runID.String()))
 	return base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }
 

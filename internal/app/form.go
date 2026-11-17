@@ -3,7 +3,7 @@ package app
 import (
 	"maps"
 
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // A template form as every surface shows it (the deploy, add and configure forms, the builder's preview, a

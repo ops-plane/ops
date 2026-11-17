@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
+	"github.com/ops-plane/ops/internal/app"
 )
 
 // Promotion (app.PreviewPromotion, app.Promote): GET /workspaces/{name}/promote picks a target and,

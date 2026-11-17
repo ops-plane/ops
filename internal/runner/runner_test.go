@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 func TestPlanThenApply(t *testing.T) {
@@ -151,7 +151,7 @@ func TestErroredState(t *testing.T) {
 	f.do(t, r, job("twice", "plan", "apply", src, map[string]any{"greeting": "hi"}))
 	f.failWrites = 2 // the push fails too
 	res, logs = f.do(t, r, job("twice", "apply", "apply", src, map[string]any{"greeting": "hi"}))
-	kept := filepath.Join(os.TempDir(), "opsolete-errored-twice.tfstate.sealed")
+	kept := filepath.Join(os.TempDir(), "ops-errored-twice.tfstate.sealed")
 	b, err := os.ReadFile(kept)
 	if res.Status != "failed" || !strings.Contains(res.Message, kept) || err != nil || strings.Contains(string(b), `"hi"`) {
 		t.Fatalf("kept sealed: %+v %v\n%s", res, err, logs)

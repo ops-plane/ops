@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/app"
+	"github.com/ops-plane/ops/internal/app"
 )
 
 // TestEndpointsDocumented: every route the server registers (all features on) is in the endpoints

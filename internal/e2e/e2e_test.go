@@ -26,17 +26,17 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/config"
-	httpserver "github.com/opsolete/opsolete/internal/http"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/runner"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/testdb"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/config"
+	httpserver "github.com/ops-plane/ops/internal/http"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/runner"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/testdb"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 const runnerToken = "e2e-runner-token-0123456789abcdef"
@@ -88,9 +88,9 @@ func TestRealRunner(t *testing.T) {
 		t.Fatalf("sensitive template: %s", secret)
 	}
 	// a template whose module calls another module of the registry, as a VM module composes its building blocks
-	nested := `{"id": "nested", "name": "Nested", "module": {"source": "opsolete.localhost:8080/examples/nested/terraform", "ref": "1.0.0"}, "inputs": []}`
+	nested := `{"id": "nested", "name": "Nested", "module": {"source": "ops.localhost:8080/examples/nested/terraform", "ref": "1.0.0"}, "inputs": []}`
 	// a template whose module imports itself (examples/modules/importable)
-	importable := `{"id": "importable", "name": "Importable", "module": {"source": "opsolete.localhost:8080/examples/importable/terraform", "ref": "1.0.0"},
+	importable := `{"id": "importable", "name": "Importable", "module": {"source": "ops.localhost:8080/examples/importable/terraform", "ref": "1.0.0"},
 		"inputs": [{"name": "name", "type": "string", "required": true, "key": true}, {"name": "size", "type": "string", "required": true},
 		{"name": "existing", "type": "bool"}]}`
 	for name, body := range map[string]string{"greeting.json": string(greeting), "greeting-secret.json": secret, "nested.json": nested, "importable.json": importable} {
@@ -103,7 +103,7 @@ func TestRealRunner(t *testing.T) {
 		t.Fatal(err)
 	}
 	// the catalog's greeting template names this registry host
-	public, _ := url.Parse("http://opsolete.localhost:8080")
+	public, _ := url.Parse("http://ops.localhost:8080")
 	notify := &app.Notifier{DB: store.Pool.Config().ConnConfig, Log: log}
 	nctx, stopNotify := context.WithCancel(ctx)
 	waitNotify := notify.Start(nctx)
@@ -240,7 +240,7 @@ func TestRealRunner(t *testing.T) {
 		nested := t.TempDir()
 		os.WriteFile(filepath.Join(nested, "main.tf"), []byte(`
 module "inner" {
-  source   = "opsolete.localhost:8080/examples/greeting/terraform"
+  source   = "ops.localhost:8080/examples/greeting/terraform"
   version  = "~> 1.1"
   greeting = "nested"
   name     = "OPS"
@@ -258,7 +258,7 @@ output "message" { value = module.inner.message }
 		send(t, "/registry", mw.FormDataContentType(), &body)
 		runOf(postForm(t, "/workspaces/"+ws+"/templates/new?template=nested", url.Values{}))
 		await(t, storage.NeedsConfirmation)
-		if log := runLog(t); !strings.Contains(log, "Downloading opsolete.localhost:8080/examples/greeting/terraform 1.1.0 for") ||
+		if log := runLog(t); !strings.Contains(log, "Downloading ops.localhost:8080/examples/greeting/terraform 1.1.0 for") ||
 			!strings.Contains(log, "nested, OPS!") {
 			t.Fatalf("plan log: %s", log)
 		}

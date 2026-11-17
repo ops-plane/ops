@@ -11,7 +11,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
+	"github.com/ops-plane/ops/internal/app"
 )
 
 // Forms: every UI POST handler reads its form with readForm (readMultipart for uploads), and shows a

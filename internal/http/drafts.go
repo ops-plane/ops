@@ -19,7 +19,7 @@ const (
 )
 
 func draftAD(r *http.Request, field string) string {
-	return "opsolete form draft\n" + actor(r).UserID.String() + "\n" + r.URL.Path + "\n" + field
+	return "ops form draft\n" + actor(r).UserID.String() + "\n" + r.URL.Path + "\n" + field
 }
 
 // sealDraft is the hidden draft of a secret typed into field; "" if it can't be sealed (the user types it again).

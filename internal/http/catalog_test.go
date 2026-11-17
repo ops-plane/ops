@@ -16,8 +16,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // fakeGitRepo is one GitHub repository: branches point at commits, a commit is a set of files.
@@ -378,7 +378,7 @@ func TestTemplateCatalogInGit(t *testing.T) {
 		}
 		mainHasIt := strings.Contains(fmt.Sprint(g.commits[g.branches["main"]]), `"Queue"`)
 		g.mu.Unlock()
-		if !strings.HasPrefix(head, "opsolete/template-") || !strings.HasPrefix(added, "catalog/") || mainHasIt || len(app.App.Templates.List()) != n {
+		if !strings.HasPrefix(head, "ops/template-") || !strings.HasPrefix(added, "catalog/") || mainHasIt || len(app.App.Templates.List()) != n {
 			t.Fatalf("pr branch %q file %q, on main %v, catalog %d -> %d", head, added, mainHasIt, n, len(app.App.Templates.List()))
 		}
 		// Saving the page again while its pull request is open adds a commit to it instead of opening another.
@@ -388,13 +388,13 @@ func TestTemplateCatalogInGit(t *testing.T) {
 		}
 		// a lookalike pull request listed first, whose description names the template but whose branch isn't its own, is ignored
 		g.mu.Lock()
-		g.branches["opsolete/template-other-abcdef"] = g.branches["main"]
-		g.pulls = append([]fakePull{{"opsolete/template-other-abcdef", "Add template X\n\nSaved in OPS by x (template " + kept[1] + ")."}}, g.pulls...)
+		g.branches["ops/template-other-abcdef"] = g.branches["main"]
+		g.pulls = append([]fakePull{{"ops/template-other-abcdef", "Add template X\n\nSaved in OPS by x (template " + kept[1] + ")."}}, g.pulls...)
 		g.mu.Unlock()
 		rec = post(h, "/templates/new", url.Values{"id": {kept[1]}, "name": {"Queue v2"}, "module_source": {"git::https://example.com/q.git"}, "module_ref": {"v1"}})
 		g.mu.Lock()
 		onBranch, pulls := g.commits[g.branches[head]][added], len(g.pulls)
-		lookalike := g.branches["opsolete/template-other-abcdef"] != g.branches["main"]
+		lookalike := g.branches["ops/template-other-abcdef"] != g.branches["main"]
 		g.mu.Unlock()
 		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "https://github.example/acme/catalog/pull/2") || pulls != 2 ||
 			!strings.Contains(onBranch, `"Queue v2"`) || lookalike {

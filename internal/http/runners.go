@@ -3,7 +3,7 @@ package httpserver
 import (
 	"net/http"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Runners (Organization settings): each runner has its own token and pool (app/runners.go). Admins only.

@@ -16,15 +16,15 @@ import (
 
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	httpserver "github.com/opsolete/opsolete/internal/http"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/testdb"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	httpserver "github.com/ops-plane/ops/internal/http"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/testdb"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // TestTerraformCLI drives the real Terraform CLI through a `cloud` block against OPS: init creates the
@@ -51,7 +51,7 @@ func TestTerraformCLI(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	public, _ := url.Parse("https://opsolete.test")
+	public, _ := url.Parse("https://ops.test")
 	log := slog.New(slog.DiscardHandler)
 	a := &app.App{Store: store, Blobs: memblob.OpenBucket(nil), Secrets: keys, Templates: tpls, Log: log,
 		Registry: &registry.Registry{PublicURL: public, Key: []byte("e2e-registry-key")}, VCS: vcs.NewClient(nil)}
@@ -81,10 +81,10 @@ func TestTerraformCLI(t *testing.T) {
 	terraform := func(t *testing.T, dir, tok string, args ...string) string {
 		t.Helper()
 		rc := filepath.Join(dir, ".terraformrc")
-		os.WriteFile(rc, []byte(`host "opsolete.test" {
+		os.WriteFile(rc, []byte(`host "ops.test" {
   services = { "tfe.v2" = "`+ts.URL+`/api/v2/" }
 }
-credentials "opsolete.test" {
+credentials "ops.test" {
   token = "`+tok+`"
 }
 `), 0o600)
@@ -101,7 +101,7 @@ credentials "opsolete.test" {
 	config := func(input string) string {
 		return `terraform {
   cloud {
-    hostname     = "opsolete.test"
+    hostname     = "ops.test"
     organization = "acme"
     workspaces { name = "cli-ws" }
   }

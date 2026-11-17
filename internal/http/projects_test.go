@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/auth"
+	"github.com/ops-plane/ops/internal/auth"
 )
 
 func TestProjectPages(t *testing.T) {

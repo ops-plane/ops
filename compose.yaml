@@ -2,8 +2,8 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_USER: opsolete
-      POSTGRES_PASSWORD: opsolete
-      POSTGRES_DB: opsolete
+      POSTGRES_USER: ops
+      POSTGRES_PASSWORD: ops
+      POSTGRES_DB: ops
     ports:
       - "127.0.0.1:5432:5432" # loopback only: these are dev credentials

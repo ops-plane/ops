@@ -72,7 +72,7 @@ type Job struct {
 
 // RegistryAccess is a registry host and the token for it, as a Terraform CLI credentials block.
 type RegistryAccess struct {
-	Host  string `json:"host"` // e.g. opsolete.example.com, or with a port
+	Host  string `json:"host"` // e.g. ops.example.com, or with a port
 	Token string `json:"token"`
 }
 

@@ -1,4 +1,4 @@
-module github.com/opsolete/opsolete
+module github.com/ops-plane/ops
 
 go 1.26.8
 

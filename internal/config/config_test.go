@@ -33,7 +33,7 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Addr != ":8080" || c.TemplatesDir != "catalog" || c.PublicURL.Host != "opsolete.localhost:8080" || !c.Deployments || !c.Registry {
+	if c.Addr != ":8080" || c.TemplatesDir != "catalog" || c.PublicURL.Host != "ops.localhost:8080" || !c.Deployments || !c.Registry {
 		t.Fatalf("unexpected defaults: %+v", c)
 	}
 
@@ -87,7 +87,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestLoadRunner(t *testing.T) {
-	t.Setenv("OPS_SERVER_URL", "http://opsolete:8080")
+	t.Setenv("OPS_SERVER_URL", "http://ops:8080")
 	t.Setenv("OPS_RUNNER_TOKEN", "")
 	t.Setenv("OPS_TERRAFORM", "/bin/terraform")
 	t.Setenv("OPS_JOB_GRACE", "")
@@ -106,7 +106,7 @@ func TestLoadRunner(t *testing.T) {
 		t.Fatal("token must be removed from the environment")
 	}
 	for _, v := range []string{"0", "-1m", "10"} {
-		for k, val := range map[string]string{"OPS_SERVER_URL": "http://opsolete:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_TERRAFORM": "/bin/terraform"} {
+		for k, val := range map[string]string{"OPS_SERVER_URL": "http://ops:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_TERRAFORM": "/bin/terraform"} {
 			t.Setenv(k, val) // LoadRunner unsets them
 		}
 		t.Setenv("OPS_JOB_GRACE", v)
@@ -114,13 +114,13 @@ func TestLoadRunner(t *testing.T) {
 			t.Fatalf("OPS_JOB_GRACE=%s: err = %v", v, err)
 		}
 	}
-	for k, val := range map[string]string{"OPS_SERVER_URL": "http://opsolete:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_JOB_GRACE": "", "OPS_SANDBOX": "on"} {
+	for k, val := range map[string]string{"OPS_SERVER_URL": "http://ops:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_JOB_GRACE": "", "OPS_SANDBOX": "on"} {
 		t.Setenv(k, val)
 	}
 	if _, err := LoadRunner(); err == nil || !strings.Contains(err.Error(), "OPS_SANDBOX") {
 		t.Fatalf("OPS_SANDBOX=on: err = %v", err)
 	}
-	for k, val := range map[string]string{"OPS_SERVER_URL": "http://opsolete:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_SANDBOX": "", "OPS_RUNNER_ONCE": "yes"} {
+	for k, val := range map[string]string{"OPS_SERVER_URL": "http://ops:8080", "OPS_RUNNER_TOKEN": "secret", "OPS_SANDBOX": "", "OPS_RUNNER_ONCE": "yes"} {
 		t.Setenv(k, val)
 	}
 	if _, err := LoadRunner(); err == nil || !strings.Contains(err.Error(), "OPS_RUNNER_ONCE") {

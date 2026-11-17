@@ -12,10 +12,10 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/testdb"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/testdb"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // testApp returns an App on a migrated database of t's own (testdb), or skips without TEST_DATABASE_URL.

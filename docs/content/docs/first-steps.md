@@ -5,7 +5,7 @@ weight: 3
 
 From a fresh install to a first managed resource. The steps are the same however you [installed]({{< relref "/docs/install" >}}) OPS (Kubernetes, NixOS, Docker or from source): everything below happens in the web UI, as an admin (`ADMIN_EMAILS`), and needs `SECRET_KEY` set (tokens and sensitive variables are stored encrypted) and at least one runner connected (**Settings → Runners**).
 
-The example uses Azure and a storage account behind a private endpoint, from [terraform-modules-examples](https://github.com/Opsolete/terraform-modules-examples/tree/main/storage-account). Any module and cloud work the same way.
+The example uses Azure and a storage account behind a private endpoint, from [terraform-modules-examples](https://github.com/ops-plane/terraform-modules-examples/tree/main/storage-account). Any module and cloud work the same way.
 
 ## 1. Connect your repositories
 

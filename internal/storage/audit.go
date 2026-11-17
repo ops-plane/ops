@@ -13,7 +13,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 type AuditEntry struct {
@@ -70,7 +70,7 @@ func (s *Store) audit(ctx context.Context, q *db.Queries, actor, action string, 
 func auditMAC(key, prev []byte, e AuditEntry) []byte {
 	b, _ := json.Marshal([]any{e.ID, e.At.UTC().Format(time.RFC3339Nano), e.Actor, e.Action, e.Detail})
 	m := hmac.New(sha256.New, key)
-	m.Write([]byte("opsolete audit log\x00"))
+	m.Write([]byte("ops audit log\x00"))
 	m.Write(prev)
 	m.Write(b)
 	return m.Sum(nil)

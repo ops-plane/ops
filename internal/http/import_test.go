@@ -12,7 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // TestImportFlow: a template whose module imports what exists (existing) is added with only its key, which plans it

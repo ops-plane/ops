@@ -21,7 +21,7 @@ func TestSealOpen(t *testing.T) {
 	if err != nil || bytes.Contains(sealed, []byte("tok")) {
 		t.Fatal("not sealed", err)
 	}
-	if !bytes.HasPrefix(sealed, []byte("opsolete:1:"+k.current.id+":")) || len(k.current.id) != 16 {
+	if !bytes.HasPrefix(sealed, []byte("ops:1:"+k.current.id+":")) || len(k.current.id) != 16 {
 		t.Fatalf("format: %q", sealed)
 	}
 	if got, err := k.Open(sealed, "here"); err != nil || got != "tok" {

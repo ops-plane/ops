@@ -3,7 +3,7 @@ package httpserver
 import (
 	"net/http"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // API tokens (Organization settings): service tokens for automation, such as the Terraform provider: admin rights,

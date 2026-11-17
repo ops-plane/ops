@@ -18,7 +18,7 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // ansiCodes matches Terraform's color codes (SGR sequences).
@@ -210,6 +210,6 @@ func writeCLIConfig(home string, reg runnerapi.RegistryAccess, modules, existing
 	}
 	conf = fmt.Appendf(conf, "credentials %q {\n  token = %q\n}\n", reg.Host, reg.Token)
 	conf = fmt.Appendf(conf, "host %q {\n  services = {\n    \"modules.v1\" = %q\n  }\n}\n", reg.Host, modules)
-	path := filepath.Join(home, "opsolete.tfrc")
+	path := filepath.Join(home, "ops.tfrc")
 	return path, os.WriteFile(path, conf, 0o600)
 }

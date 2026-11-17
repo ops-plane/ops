@@ -17,13 +17,13 @@ OPS is a private Terraform module registry, built on the standard [module regist
 ## Use from Terraform
 
 ```sh
-just token my-laptop     # or `opsolete token <name>`; printed once
-export TF_TOKEN_opsolete_example_com=<token>
+just token my-laptop     # or `ops token <name>`; printed once
+export TF_TOKEN_ops_example_com=<token>
 ```
 
 ```hcl
 module "x" {
-  source  = "opsolete.example.com/platform/storage/azurerm"
+  source  = "ops.example.com/platform/storage/azurerm"
   version = "1.0.0"
 }
 ```

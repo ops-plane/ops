@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // Currency is the ISO 4217 code cost estimates are in: USD or EUR.

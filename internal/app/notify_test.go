@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // listening starts a Notifier on a's database and returns once it delivers notifications.
@@ -128,7 +128,7 @@ func TestNotifyReconnect(t *testing.T) {
 	n := listening(t, a, 100*time.Millisecond)
 	var killed int
 	if err := a.Store.Pool.QueryRow(ctx, `SELECT count(pg_terminate_backend(pid)) FROM pg_stat_activity
-		WHERE application_name = 'opsolete-notify' AND datname = current_database()`).Scan(&killed); err != nil || killed != 1 {
+		WHERE application_name = 'ops-notify' AND datname = current_database()`).Scan(&killed); err != nil || killed != 1 {
 		t.Fatalf("terminate the listener: %d, %v", killed, err)
 	}
 	// meanwhile waiters still look again after the fallback interval

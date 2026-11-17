@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // workspacePage is a workspace's side-menu page (workspace.html): the header part every tab shows,

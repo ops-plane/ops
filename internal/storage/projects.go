@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 var (

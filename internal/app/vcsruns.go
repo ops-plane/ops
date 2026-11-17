@@ -10,8 +10,8 @@ import (
 
 	"github.com/hashicorp/go-version"
 
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // PollVCSRuns queues the runs VCS events call for, once (a scheduler job): an apply run for a new

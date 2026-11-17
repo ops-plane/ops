@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // A claimed job can be far bigger than 64 KiB (one variable alone may be); over MaxJobSize is a clear error.

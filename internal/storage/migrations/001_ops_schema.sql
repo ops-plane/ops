@@ -19,7 +19,7 @@ CREATE TABLE users (
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- api_tokens: registry tokens (opsolete token <name>, no user, no expiry), user tokens (terraform login, a user and
+-- api_tokens: registry tokens (ops token <name>, no user, no expiry), user tokens (terraform login, a user and
 -- an expiry) and service tokens: automation (the Terraform provider, scripts) acts with admin rights as the token
 -- itself, not as a person; no user, an expiry only if one was given, names unique so an audit entry token:<name>
 -- names one token. Only the SHA-256 of a token is stored.

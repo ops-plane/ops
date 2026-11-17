@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 func TestAuditLogRecordsChanges(t *testing.T) {
@@ -86,9 +86,9 @@ func TestAuditRowSummary(t *testing.T) {
 		t.Error("secretName redacts a plain field")
 	}
 	row := newAuditRow(storage.AuditEntry{Detail: []byte(`{"form":{"description":[""],"in_label":["x"],"module_ref":["2.0.0"],
-		"module_source":["opsolete.lan/terraform-modules-examples/virtual-machine/azurerm"],"name":["vm"],"zz":["1"]},
+		"module_source":["ops.lan/terraform-modules-examples/virtual-machine/azurerm"],"name":["vm"],"zz":["1"]},
 		"request":{"ip":"127.0.0.1","forwarded_for":"100.1.2.3","status":422,"error":"bad input"}}`)})
-	want := "name=vm module_ref=2.0.0 module_source=opsolete.lan/terraform-modules-examples… +1 more · bad input"
+	want := "name=vm module_ref=2.0.0 module_source=ops.lan/terraform-modules-examples/virt… +1 more · bad input"
 	if row.Summary != want || row.From != "100.1.2.3 (via 127.0.0.1)" || row.StatusText != "rejected" || !strings.Contains(row.Pretty, "\n  ") {
 		t.Fatalf("row: %q %q %q", row.Summary, row.From, row.StatusText)
 	}

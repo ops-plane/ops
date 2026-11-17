@@ -11,9 +11,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 func TestRenderRollout(t *testing.T) {
@@ -47,7 +47,7 @@ func TestStartRollout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	form := url.Values{"source": {"opsolete.localhost:8080/examples/greeting/terraform"}, "ref": {"1.0.0"}, "project": {p.Name}, "batch": {"2"}}
+	form := url.Values{"source": {"ops.localhost:8080/examples/greeting/terraform"}, "ref": {"1.0.0"}, "project": {p.Name}, "batch": {"2"}}
 	if rec := post(h, "/templates/greeting/rollout", form); rec.Code != http.StatusConflict {
 		t.Fatalf("stale version: %d %s", rec.Code, rec.Body)
 	}

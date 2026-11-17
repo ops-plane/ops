@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Form fields of the deploy form besides the template inputs. Input names can't contain "-",

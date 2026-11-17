@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/app"
+	"github.com/ops-plane/ops/internal/app"
 )
 
 var (

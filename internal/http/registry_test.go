@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 func TestLatestVersions(t *testing.T) {

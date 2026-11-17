@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // VCSConnection is a VCS provider account; Token is sealed (see internal/app/sealing.go).

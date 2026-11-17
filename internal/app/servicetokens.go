@@ -7,12 +7,12 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Service tokens: automation (the Terraform provider, scripts) acts with admin rights as the token itself, not as a
 // person; the audit log names it token:<name>. Admins create and revoke them (Settings → API tokens), or the server's
-// CLI registers one (opsolete api-token) to bootstrap: Terraform needs a token before it can create anything.
+// CLI registers one (ops api-token) to bootstrap: Terraform needs a token before it can create anything.
 
 // ServiceTokenActor is how a service token acts: an admin without a user.
 func ServiceTokenActor(name string) Actor { return Actor{Email: "token:" + name, Admin: true} }

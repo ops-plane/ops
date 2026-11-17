@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/opsolete/opsolete/internal/mask"
+	"github.com/ops-plane/ops/internal/mask"
 )
 
 // StateChange is a resource instance or root output that differs between two state versions.

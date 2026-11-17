@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // WorkspaceTemplate is a template added to a workspace: the module block module.<Name>, pinned to

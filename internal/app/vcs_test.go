@@ -13,9 +13,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // fakeGitHub serves acme/infra with branch main to token "pat", points a's VCS client at it and returns its API root.

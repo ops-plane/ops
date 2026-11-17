@@ -3,7 +3,7 @@ title: Terraform provider
 weight: 12
 ---
 
-The [OPS provider](https://registry.terraform.io/providers/Opsolete/opsolete/latest) manages OPS's platform objects with Terraform: set up projects, their credentials and network values, and empty workspaces as code, and review changes to them in a plan like any other infrastructure.
+The [OPS provider](https://registry.terraform.io/providers/ops-plane/ops/latest) manages OPS's platform objects with Terraform: set up projects, their credentials and network values, and empty workspaces as code, and review changes to them in a plan like any other infrastructure.
 
 | Managed with the provider | Stays in OPS's UI |
 |---|---|
@@ -17,23 +17,23 @@ It uses the [JSON API]({{< relref "/docs/endpoints#json-api" >}}), so the same a
 
 ## Set it up
 
-1. **A token:** an admin creates a service token under **Settings → API tokens**, or on the server with `opsolete api-token terraform` (to bootstrap: Terraform needs a token before it can create anything). It has admin rights and the audit log names it `token:terraform`. See [API tokens]({{< relref "/docs/config/authentication#api-tokens-automation" >}}).
+1. **A token:** an admin creates a service token under **Settings → API tokens**, or on the server with `ops api-token terraform` (to bootstrap: Terraform needs a token before it can create anything). It has admin rights and the audit log names it `token:terraform`. See [API tokens]({{< relref "/docs/config/authentication#api-tokens-automation" >}}).
 2. **The provider:**
 
    ```hcl
    terraform {
      required_providers {
-       opsolete = {
-         source  = "opsolete/opsolete"
+       ops = {
+         source  = "ops-plane/ops"
          version = "~> 0.2" # needs OPS 0.11.0 or later
        }
      }
    }
 
-   # url and token, or leave both out and set OPSOLETE_URL and OPSOLETE_TOKEN
-   provider "opsolete" {
-     url   = "https://opsolete.example.com"
-     token = var.opsolete_token
+   # url and token, or leave both out and set OPSPLANE_URL and OPSPLANE_TOKEN
+   provider "ops" {
+     url   = "https://ops.example.com"
+     token = var.ops_token
    }
    ```
 
@@ -43,55 +43,55 @@ It uses the [JSON API]({{< relref "/docs/endpoints#json-api" >}}), so the same a
 One way to use projects, as code: a project per Azure subscription, its credentials and standard network in a variable set, its region as an environment value, and a workspace per resource group.
 
 ```hcl
-resource "opsolete_project" "prd" {
+resource "ops_project" "prd" {
   name        = "prd"
   description = "Production subscription"
   runner_pool = "prd" # only the prd runners get its runs, and its credentials
 }
 
 # The subscription's credentials and network: for all the project's workspaces
-resource "opsolete_variable_set" "azure_prd" {
+resource "ops_variable_set" "azure_prd" {
   name = "azure-prd"
 }
 
-resource "opsolete_variable_set_variable" "arm" {
+resource "ops_variable_set_variable" "arm" {
   for_each = {
     ARM_TENANT_ID       = var.tenant_id
     ARM_SUBSCRIPTION_ID = var.subscription_id
     ARM_CLIENT_ID       = var.client_id
     ARM_CLIENT_SECRET   = var.client_secret
   }
-  variable_set_id = opsolete_variable_set.azure_prd.id
+  variable_set_id = ops_variable_set.azure_prd.id
   category        = "env"
   key             = each.key
   value           = each.value
   sensitive       = true
 }
 
-resource "opsolete_variable_set_variable" "vnet" {
-  variable_set_id = opsolete_variable_set.azure_prd.id
+resource "ops_variable_set_variable" "vnet" {
+  variable_set_id = ops_variable_set.azure_prd.id
   category        = "terraform"
   key             = "vnet_name"
   value           = "VNET"
 }
 
-resource "opsolete_variable_set_project" "azure_prd" {
-  variable_set_id = opsolete_variable_set.azure_prd.id
-  project_id      = opsolete_project.prd.id
+resource "ops_variable_set_project" "azure_prd" {
+  variable_set_id = ops_variable_set.azure_prd.id
+  project_id      = ops_project.prd.id
 }
 
 # The subscription's region, for a template's per-environment input
-resource "opsolete_environment_value" "region" {
-  project_id  = opsolete_project.prd.id
+resource "ops_environment_value" "region" {
+  project_id  = ops_project.prd.id
   template_id = "storage-account" # the template's id in the catalog
   input       = "location"
   value       = "swedencentral"
 }
 
 # A workspace per resource group; its templates are added in OPS
-resource "opsolete_workspace" "shop" {
+resource "ops_workspace" "shop" {
   name            = "shop-prd"
-  project_id      = opsolete_project.prd.id
+  project_id      = ops_project.prd.id
   drift_detection = true
 }
 ```
@@ -100,20 +100,20 @@ resource "opsolete_workspace" "shop" {
 
 | Resource | Manages | Import with |
 |---|---|---|
-| `opsolete_project` | name, `description`, `runner_pool`, `default` | its name or id |
-| `opsolete_environment_value` | `project_id`, `template_id`, `input`, `value`, `keep_own` | `<project_id>/<template_id>/<input>` |
-| `opsolete_workspace` | name, `project_id` (changing it moves the workspace), `auto_apply`, `execution_mode`, `drift_detection`, `force_delete` | its name or id |
-| `opsolete_workspace_variable` | `workspace_id`, `category` (`env` or `terraform`), `key`, `value`, `sensitive`, `hcl` | `<workspace_id>/<variable_id>` |
-| `opsolete_variable_set` | name, `description`, `global`, `priority` | its name or id |
-| `opsolete_variable_set_variable` | as a workspace variable, with `variable_set_id` | `<variable_set_id>/<variable_id>` |
-| `opsolete_variable_set_project` | applies a set to a project's workspaces | `<variable_set_id>/<project_id>` |
-| `opsolete_variable_set_workspace` | applies a set to one workspace | `<variable_set_id>/<workspace_id>` |
-| `opsolete_vcs_connection` | name, `provider_type` (`github` or `azure-devops`), `base_url`, `token`, `scope`, `project_ids`, `workspace_ids` | its name or id |
-| `opsolete_runner` | name, `pool`, and its `token`: created and returned once (sensitive), or one from a secret store registered | its name or id |
-| `opsolete_registry_module` | a module published from a repository's tags: `vcs_connection_id`, `repo`, `dir`, `tag_prefix`, `namespace`, `name`, `system`; read: `versions`. Destroying it stops publishing, its versions stay | `<namespace>/<name>/<system>` |
-| `opsolete_template_catalog` | the catalog's `vcs_connection_id`, `repo`, `branch`, `dir`, `mode`; one per installation. Destroying it disconnects it | any id |
+| `ops_project` | name, `description`, `runner_pool`, `default` | its name or id |
+| `ops_environment_value` | `project_id`, `template_id`, `input`, `value`, `keep_own` | `<project_id>/<template_id>/<input>` |
+| `ops_workspace` | name, `project_id` (changing it moves the workspace), `auto_apply`, `execution_mode`, `drift_detection`, `force_delete` | its name or id |
+| `ops_workspace_variable` | `workspace_id`, `category` (`env` or `terraform`), `key`, `value`, `sensitive`, `hcl` | `<workspace_id>/<variable_id>` |
+| `ops_variable_set` | name, `description`, `global`, `priority` | its name or id |
+| `ops_variable_set_variable` | as a workspace variable, with `variable_set_id` | `<variable_set_id>/<variable_id>` |
+| `ops_variable_set_project` | applies a set to a project's workspaces | `<variable_set_id>/<project_id>` |
+| `ops_variable_set_workspace` | applies a set to one workspace | `<variable_set_id>/<workspace_id>` |
+| `ops_vcs_connection` | name, `provider_type` (`github` or `azure-devops`), `base_url`, `token`, `scope`, `project_ids`, `workspace_ids` | its name or id |
+| `ops_runner` | name, `pool`, and its `token`: created and returned once (sensitive), or one from a secret store registered | its name or id |
+| `ops_registry_module` | a module published from a repository's tags: `vcs_connection_id`, `repo`, `dir`, `tag_prefix`, `namespace`, `name`, `system`; read: `versions`. Destroying it stops publishing, its versions stay | `<namespace>/<name>/<system>` |
+| `ops_template_catalog` | the catalog's `vcs_connection_id`, `repo`, `branch`, `dir`, `mode`; one per installation. Destroying it disconnects it | any id |
 
-Data sources look up a `opsolete_project`, `opsolete_workspace`, `opsolete_variable_set` or `opsolete_vcs_connection` by name. `opsolete_runner`, `opsolete_registry_module` and `opsolete_template_catalog` need OPS 0.11.0; the others 0.10.0. Every attribute is described in the [provider's docs on the Terraform Registry](https://registry.terraform.io/providers/Opsolete/opsolete/latest/docs).
+Data sources look up a `ops_project`, `ops_workspace`, `ops_variable_set` or `ops_vcs_connection` by name. `ops_runner`, `ops_registry_module` and `ops_template_catalog` need OPS 0.11.0; the others 0.10.0. Every attribute is described in the [provider's docs on the Terraform Registry](https://registry.terraform.io/providers/ops-plane/ops/latest/docs).
 
 ## Good to know
 

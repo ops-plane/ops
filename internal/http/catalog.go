@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Settings → Templates: the template catalog's Git repository (see app.App.PullCatalog). Without one

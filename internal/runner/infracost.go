@@ -15,7 +15,7 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // estimate prices a plan with `infracost breakdown`. nil when Infracost isn't configured or
@@ -32,7 +32,7 @@ func (r *Runner) estimate(ctx context.Context, dir string, p *tfjson.Plan, curre
 	if err != nil {
 		return skip(err)
 	}
-	path := filepath.Join(dir, "opsolete.tfplan.json") // holds variable values: stays in the job's dir
+	path := filepath.Join(dir, "ops.tfplan.json") // holds variable values: stays in the job's dir
 	if err := os.WriteFile(path, b, 0o600); err != nil {
 		return skip(err)
 	}

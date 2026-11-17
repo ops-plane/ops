@@ -8,13 +8,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Runners: each has its own token and a pool; a project's jobs go only to runners of its pool
 // (ProjectSettings.RunnerPool). Admins manage them; the runner API authenticates with RunnerByToken.
 
-// MinRunnerToken is the shortest token an operator may register (opsolete runner-token -from-stdin).
+// MinRunnerToken is the shortest token an operator may register (ops runner-token -from-stdin).
 const MinRunnerToken = 32
 
 // RunnerByToken is the runner token belongs to. ErrNotFound: none (unknown or revoked).

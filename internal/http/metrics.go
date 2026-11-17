@@ -11,17 +11,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 var httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-	Name: "opsolete_http_request_duration_seconds",
+	Name: "ops_http_request_duration_seconds",
 	Help: "HTTP requests by route pattern. Log streams and runner long-polls land in the top bucket.",
 }, []string{"code", "method", "route"})
 
 // SchedulerLeader is set by main from app.Scheduler.OnLead.
 var SchedulerLeader = promauto.NewGauge(prometheus.GaugeOpts{
-	Name: "opsolete_scheduler_leader",
+	Name: "ops_scheduler_leader",
 	Help: "1 while this replica runs the background jobs (lease reaper, drift checks, rollouts, VCS polling, catalog sync), else 0.",
 })
 
@@ -41,9 +41,9 @@ func instrument(mux *http.ServeMux, next http.Handler) http.Handler {
 }
 
 var (
-	runsDesc    = prometheus.NewDesc("opsolete_runs", "Runs by status, all time (final statuses only grow).", []string{"status"}, nil)
-	queueDesc   = prometheus.NewDesc("opsolete_run_queue_oldest_seconds", "Age of the oldest queued plan or apply job; 0 when the queue is empty.", nil, nil)
-	wsDesc      = prometheus.NewDesc("opsolete_workspaces", "Workspaces.", nil, nil)
+	runsDesc    = prometheus.NewDesc("ops_runs", "Runs by status, all time (final statuses only grow).", []string{"status"}, nil)
+	queueDesc   = prometheus.NewDesc("ops_run_queue_oldest_seconds", "Age of the oldest queued plan or apply job; 0 when the queue is empty.", nil, nil)
+	wsDesc      = prometheus.NewDesc("ops_workspaces", "Workspaces.", nil, nil)
 	runStatuses = []string{storage.Pending, storage.PlanQueued, storage.Planning, storage.NeedsConfirmation, storage.ApplyQueued, storage.Applying,
 		storage.Applied, storage.NoChanges, storage.Drifted, storage.Planned, storage.Discarded, storage.Errored, storage.Canceled}
 )
@@ -90,7 +90,7 @@ var poolDescs = func() map[string]*prometheus.Desc {
 		"max_idle_time_closed_total":  "The total number of connections closed due to idle time.",
 		"max_lifetime_closed_total":   "The total number of connections closed due to max connection lifetime.",
 	} {
-		m[name] = prometheus.NewDesc("go_sql_"+name, help, nil, prometheus.Labels{"db_name": "opsolete"})
+		m[name] = prometheus.NewDesc("go_sql_"+name, help, nil, prometheus.Labels{"db_name": "ops"})
 	}
 	return m
 }()

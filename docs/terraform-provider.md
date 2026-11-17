@@ -1,6 +1,6 @@
 # Managing OPS with Terraform: API design (phase 1)
 
-Status: **agreed** (November 2026); phase 1 is being built. Phase 2, the provider (`terraform-provider-opsolete`, its own
+Status: **agreed** (November 2026); phase 1 is being built. Phase 2, the provider (`terraform-provider-ops`, its own
 repository), is built on this API.
 
 ## Goal and scope
@@ -27,8 +27,8 @@ adds the JSON API for it, identifiers Terraform can keep, and a token for automa
 2. **A service token for automation.** User tokens expire and act as a person. An admin creates a **service token**:
    a name, admin rights, no expiry unless given, revocable, shown once, and every action it takes is in the audit log
    as `token:<name>`. Created under *Settings → API tokens*, or for bootstrapping (Terraform needs a token before it
-   can create anything) with the CLI, like runner tokens: `opsolete api-token <name>` or
-   `opsolete api-token -from-env NAME <name>`. Sent as `Authorization: Bearer …`, like user tokens.
+   can create anything) with the CLI, like runner tokens: `ops api-token <name>` or
+   `ops api-token -from-env NAME <name>`. Sent as `Authorization: Bearer …`, like user tokens.
 3. **Write-only secrets.** Sensitive variable values and VCS tokens are never returned (`"value": null,
    "sensitive": true`). The provider keeps the configured value in its state and can't see a change made in the UI;
    the docs say so (as Terraform's `tfe` provider does).
@@ -59,7 +59,7 @@ adds the JSON API for it, identifiers Terraform can keep, and a token for automa
 | Runner | `GET/POST /runners`, `GET/DELETE /runners/{id}` | `name`, `pool`; a new `token` returned once, or `token` sent (registered) |
 | Registry module from VCS | `GET/POST /vcs-modules`, `GET/DELETE /vcs-modules/{namespace}/{name}/{system}` | `connection_id`, `repo`, `dir`, `tag_prefix`, the address; deleting stops publishing, its versions stay |
 | Template catalog | `GET/PUT/DELETE /template-catalog` | `connection_id`, `repo`, `branch`, `dir`, `mode`; one per installation |
-| Service token | *Settings → API tokens*, `opsolete api-token` | `name`, `expires_at` (optional) |
+| Service token | *Settings → API tokens*, `ops api-token` | `name`, `expires_at` (optional) |
 
 Lists aren't paginated: these objects number in the hundreds at most. If that changes, `?page` comes later without
 breaking anything.
@@ -67,42 +67,42 @@ breaking anything.
 ## The provider (phase 2), for orientation
 
 ```hcl
-provider "opsolete" {
-  url   = "https://opsolete.example.com"
-  token = var.opsolete_token # a service token; or OPSOLETE_TOKEN
+provider "ops" {
+  url   = "https://ops.example.com"
+  token = var.ops_token # a service token; or OPSPLANE_TOKEN
 }
 
-resource "opsolete_project" "prd" {
+resource "ops_project" "prd" {
   name        = "prd"
   runner_pool = "prd"
 }
 
-resource "opsolete_variable_set" "azure_prd" {
+resource "ops_variable_set" "azure_prd" {
   name = "azure-prd"
 }
 
-resource "opsolete_variable_set_variable" "secret" {
-  variable_set_id = opsolete_variable_set.azure_prd.id
+resource "ops_variable_set_variable" "secret" {
+  variable_set_id = ops_variable_set.azure_prd.id
   category        = "env"
   key             = "ARM_CLIENT_SECRET"
   value           = var.arm_client_secret
   sensitive       = true
 }
 
-resource "opsolete_variable_set_project" "azure_prd" {
-  variable_set_id = opsolete_variable_set.azure_prd.id
-  project_id      = opsolete_project.prd.id
+resource "ops_variable_set_project" "azure_prd" {
+  variable_set_id = ops_variable_set.azure_prd.id
+  project_id      = ops_project.prd.id
 }
 
-resource "opsolete_workspace" "shop" {
+resource "ops_workspace" "shop" {
   name       = "shop-prd"
-  project_id = opsolete_project.prd.id
+  project_id = ops_project.prd.id
 }
 ```
 
-Resources: `opsolete_project`, `opsolete_environment_value`, `opsolete_workspace`, `opsolete_workspace_variable`, `opsolete_variable_set`,
-`opsolete_variable_set_variable`, `opsolete_variable_set_project`, `opsolete_variable_set_workspace`,
-`opsolete_vcs_connection`; data sources for projects, workspaces and variable sets by name. All importable, by ID or
+Resources: `ops_project`, `ops_environment_value`, `ops_workspace`, `ops_workspace_variable`, `ops_variable_set`,
+`ops_variable_set_variable`, `ops_variable_set_project`, `ops_variable_set_workspace`,
+`ops_vcs_connection`; data sources for projects, workspaces and variable sets by name. All importable, by ID or
 name.
 
 ## Things to know when using it
@@ -116,7 +116,7 @@ name.
 
 1. Storage: look up projects and variable sets by ID (workspaces and VCS connections can already); attach and detach a
    single set (the queries exist); service tokens (a token scope, no user).
-2. The service token: the principal `token:<name>` with admin rights, *Settings → API tokens*, `opsolete api-token`.
+2. The service token: the principal `token:<name>` with admin rights, *Settings → API tokens*, `ops api-token`.
 3. The endpoints above (`internal/http/api_*.go`), each a thin handler on the existing app function; the existing
    name routes move to IDs.
 4. Tests: a create–read–update–delete round trip per object over HTTP, and every route in the access test (each role,

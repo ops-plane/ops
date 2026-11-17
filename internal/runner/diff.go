@@ -10,8 +10,8 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // planDiff lists the attribute changes of the resources summarize lists, what Terraform's plan output shows:

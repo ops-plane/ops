@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // secretPrefix names the form fields of sensitive inputs, so the audit log redacts them.

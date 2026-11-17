@@ -20,8 +20,8 @@ just test-linux    # the non-DB tests on Linux in docker (go.mod's Go, CI's Terr
 just smoke         # nix build, boot the binary, create a workspace from a template and list it (no runner)
 just check         # test + smoke, run before committing
 just token <name>  # registry token for Terraform clients
-just image app|runner   # container images, built with nix (also ghcr.io/opsolete/opsolete-app|runner)
-just docs          # preview this documentation on http://localhost:1313/Opsolete/
+just image app|runner   # container images, built with nix (also ghcr.io/ops-plane/ops-app|runner)
+just docs          # preview this documentation on http://localhost:1313/ops/
 just sqlc          # regenerate internal/storage/db after changing internal/storage/queries
 just psql | db-start | db-stop | db-reset | down
 ```
@@ -34,13 +34,13 @@ Requirements: Go 1.26+, PostgreSQL 13+ (it needs `gen_random_uuid()`; CI tests 1
 
 ```sh
 docker compose up -d            # compose.yaml: PostgreSQL 17 on 127.0.0.1:5432; or use any local PostgreSQL
-export DATABASE_URL=postgres://opsolete:opsolete@localhost:5432/opsolete
+export DATABASE_URL=postgres://ops:ops@localhost:5432/ops
 export AUTH_DEV_USER=dev@localhost ADMIN_EMAILS=dev@localhost   # local only, see Login
 export SECRET_KEY=$(openssl rand -hex 32) STATE_STORE="file://$PWD/.devdata/state-store?create_dir=1&metadata=skip"
-go run ./cmd/opsolete
+go run ./cmd/ops
 ```
 
-Then open http://localhost:8080. The schema is created on startup. For a runner, in a second terminal with the same settings: `OPS_RUNNER_TOKEN=$(go run ./cmd/opsolete runner-token local) OPS_SERVER_URL=http://localhost:8080 go run ./cmd/opsolete runner`. All settings are listed in the [option reference]({{< relref "/docs/config/reference" >}}); `AUTH_DEV_USER` is explained under [Login]({{< relref "/docs/config/authentication" >}}).
+Then open http://localhost:8080. The schema is created on startup. For a runner, in a second terminal with the same settings: `OPS_RUNNER_TOKEN=$(go run ./cmd/ops runner-token local) OPS_SERVER_URL=http://localhost:8080 go run ./cmd/ops runner`. All settings are listed in the [option reference]({{< relref "/docs/config/reference" >}}); `AUTH_DEV_USER` is explained under [Login]({{< relref "/docs/config/authentication" >}}).
 
 ## Examples
 

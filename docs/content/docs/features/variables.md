@@ -40,7 +40,7 @@ variable "tags_json" {
 
 locals {
   # the last map wins: a project adds tags, but can't change the standard ones
-  tags = merge(tomap(jsondecode(var.tags_json)), { managed_by = "opsolete" })
+  tags = merge(tomap(jsondecode(var.tags_json)), { managed_by = "ops" })
 }
 ```
 

@@ -5,8 +5,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Projects group workspaces. Admins create, rename and delete them and move workspaces (app decides);

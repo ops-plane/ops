@@ -1,12 +1,12 @@
-// Command opsolete runs the server (default), a runner, or creates API tokens:
+// Command ops runs the server (default), a runner, or creates API tokens:
 //
-//	opsolete                          serve the web UI, registry and runner API
-//	opsolete runner                   execute deployments (no database needed)
-//	opsolete token <name>             create a registry API token
-//	opsolete runner-token [-pool p] [-from-stdin | -from-env NAME] <name>
+//	ops                          serve the web UI, registry and runner API
+//	ops runner                   execute deployments (no database needed)
+//	ops token <name>             create a registry API token
+//	ops runner-token [-pool p] [-from-stdin | -from-env NAME] <name>
 //	                                  create a runner's token (or register the one on stdin)
-//	opsolete rotate-key               re-seal everything from SECRET_KEY_PREVIOUS to SECRET_KEY
-//	opsolete unseal-state <file>      print a state a runner kept sealed (OPS_RUNNER_TOKEN: that runner's)
+//	ops rotate-key               re-seal everything from SECRET_KEY_PREVIOUS to SECRET_KEY
+//	ops unseal-state <file>      print a state a runner kept sealed (OPS_RUNNER_TOKEN: that runner's)
 package main
 
 import (
@@ -31,16 +31,16 @@ import (
 	_ "gocloud.dev/blob/gcsblob"   // gs://
 	_ "gocloud.dev/blob/s3blob"    // s3:// (AWS and S3-compatible stores)
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/config"
-	httpserver "github.com/opsolete/opsolete/internal/http"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/runner"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/config"
+	httpserver "github.com/ops-plane/ops/internal/http"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/runner"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 func main() {
@@ -70,7 +70,7 @@ func main() {
 	case os.Args[1] == "unseal-state" && len(os.Args) == 3:
 		err = unsealState(os.Args[2])
 	default:
-		err = errors.New("usage: opsolete [runner | token <name> | runner-token [-pool p] [-from-stdin | -from-env NAME] <name> | api-token [-from-stdin | -from-env NAME] <name> | rotate-key | unseal-state <file>]")
+		err = errors.New("usage: ops [runner | token <name> | runner-token [-pool p] [-from-stdin | -from-env NAME] <name> | api-token [-from-stdin | -from-env NAME] <name> | rotate-key | unseal-state <file>]")
 	}
 	if err != nil {
 		log.Error("fatal", "err", err)
@@ -187,7 +187,7 @@ func runnerToken(args []string) error {
 		return err
 	}
 	if fl.NArg() != 1 || *stdin && *env != "" {
-		return errors.New("usage: opsolete runner-token [-pool p] [-from-stdin | -from-env NAME] <name>")
+		return errors.New("usage: ops runner-token [-pool p] [-from-stdin | -from-env NAME] <name>")
 	}
 	register := *stdin || *env != ""
 	cfg, err := config.Load()
@@ -238,7 +238,7 @@ func apiToken(args []string) error {
 		return err
 	}
 	if fl.NArg() != 1 || *stdin && *env != "" {
-		return errors.New("usage: opsolete api-token [-from-stdin | -from-env NAME] <name>")
+		return errors.New("usage: ops api-token [-from-stdin | -from-env NAME] <name>")
 	}
 	register := *stdin || *env != ""
 	cfg, err := config.Load()
@@ -346,7 +346,7 @@ func serve(log *slog.Logger) error {
 	var state *blob.Bucket
 	if cfg.Deployments {
 		if os.Getenv("RUNNER_TOKEN") != "" {
-			log.Warn("RUNNER_TOKEN is set, but the server doesn't read it: each runner's token must be registered (opsolete runner-token)")
+			log.Warn("RUNNER_TOKEN is set, but the server doesn't read it: each runner's token must be registered (ops runner-token)")
 		}
 		if cfg.StateStore == "" {
 			return errors.New("STATE_STORE is required for deployments, e.g. azblob://tfstate, s3://tfstate?region=…, gs://tfstate or file:///path")
@@ -356,7 +356,7 @@ func serve(log *slog.Logger) error {
 		}
 		defer state.Close()
 		// Fail at startup, not at the first run, if the store is unreachable or the credentials are wrong.
-		if _, err := state.Exists(ctx, "opsolete-startup-check"); err != nil {
+		if _, err := state.Exists(ctx, "ops-startup-check"); err != nil {
 			return fmt.Errorf("STATE_STORE not usable: %w", err)
 		}
 	}

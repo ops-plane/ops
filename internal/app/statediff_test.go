@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/mask"
+	"github.com/ops-plane/ops/internal/mask"
 )
 
 func TestDiffStates(t *testing.T) {

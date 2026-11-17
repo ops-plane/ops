@@ -176,7 +176,7 @@ Kept: the import guards, `Plan.Import` counts, keep-own environment values.
 ## Open
 
 - The example modules: `existing` for the VM itself (the data source and import blocks above); in
-  [terraform-modules-examples](https://github.com/Opsolete/terraform-modules-examples), not this repository.
+  [terraform-modules-examples](https://github.com/ops-plane/terraform-modules-examples), not this repository.
 - Not tried: Linux VMs; a NIC outside the VM's resource group; `runner/found.go` itself against Azure (the spike
   was; the Go version is tested on plan JSON shaped like Terraform's, and with a real Terraform import).
 - A picker (what exists, what's managed) on `terraform query`, if wanted.

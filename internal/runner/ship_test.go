@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // The shipper masks a signed URL even when it arrives split over two writes, and its final flush

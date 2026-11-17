@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// The test binary is the runner's binary in the sandbox tests: it runs the helper as cmd/opsolete does.
+// The test binary is the runner's binary in the sandbox tests: it runs the helper as cmd/ops does.
 func TestMain(m *testing.M) {
 	if len(os.Args) > 1 && os.Args[1] == SandboxArg {
 		os.Exit(SandboxMain(os.Args[2:]))

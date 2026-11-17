@@ -12,7 +12,7 @@
 <section class="alert" role="status" aria-labelledby="token-head">
   <h2 id="token-head">Token of runner {{$.Created}}</h2>
   <p>Copy it now: it isn't shown again. Start the runner with it:</p>
-  <pre><code>OPS_SERVER_URL={{$.Server}} OPS_RUNNER_TOKEN={{.}} opsolete runner</code></pre>
+  <pre><code>OPS_SERVER_URL={{$.Server}} OPS_RUNNER_TOKEN={{.}} ops runner</code></pre>
   <button type="button" class="secondary" data-copy="{{.}}">Copy token</button>
 </section>
 {{end}}
@@ -29,7 +29,7 @@
     <button type="submit" class="secondary">Delete</button></form></td>
 </tr>
 {{else}}
-<tr><td colspan="4" class="empty">No runners yet: create one below, or with <code>opsolete runner-token &lt;name&gt;</code> on the server.</td></tr>
+<tr><td colspan="4" class="empty">No runners yet: create one below, or with <code>ops runner-token &lt;name&gt;</code> on the server.</td></tr>
 {{end}}
 </table>
 </div>

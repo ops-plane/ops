@@ -8,9 +8,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // Tags without the module's folder are downloaded once; the cache keeps only tags still listed and

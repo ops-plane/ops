@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Every server replica runs one Notifier: a connection of its own LISTENing on storage's channels
@@ -143,7 +143,7 @@ func (n *Notifier) Start(ctx context.Context) (wait func()) {
 // listen connects, LISTENs and fans notifications out until the connection or ctx ends.
 func (n *Notifier) listen(ctx context.Context) (connected bool, err error) {
 	cfg := n.DB.Copy()
-	cfg.RuntimeParams["application_name"] = "opsolete-notify"
+	cfg.RuntimeParams["application_name"] = "ops-notify"
 	// it only reads: a vanished server (node lost, no FIN) shows as an error in ~25 s, not hours
 	cfg.DialFunc = (&net.Dialer{Timeout: 10 * time.Second,
 		KeepAliveConfig: net.KeepAliveConfig{Enable: true, Idle: 10 * time.Second, Interval: 5 * time.Second, Count: 3}}).DialContext

@@ -31,7 +31,7 @@ Teams are your IdP's groups. At every login OPS records the ID token's `groups` 
 Scripts and the Terraform provider use the [JSON API]({{< relref "/docs/endpoints#json-api" >}}) with a token as `Authorization: Bearer …`. A `terraform login` token acts as you and expires; for automation, create a **service token**:
 
 - **Settings → API tokens** (admins): a name; the token is shown once. Revoking it refuses its next request.
-- Or on the server, for bootstrapping (Terraform needs a token before it can create anything): `opsolete api-token <name>` prints a new one; `opsolete api-token -from-env NAME <name>` (or `-from-stdin`) registers one you generated yourself (at least 32 characters, e.g. `openssl rand -hex 32`) and replaces that token's old value, at every start if you like.
+- Or on the server, for bootstrapping (Terraform needs a token before it can create anything): `ops api-token <name>` prints a new one; `ops api-token -from-env NAME <name>` (or `-from-stdin`) registers one you generated yourself (at least 32 characters, e.g. `openssl rand -hex 32`) and replaces that token's old value, at every start if you like.
 
 The [Terraform provider]({{< relref "/docs/features/terraform-provider" >}}) uses one. A service token has **admin rights** and isn't a person: the audit log names it `token:<name>`. Keep it like any admin credential, and give each automation its own, so you can revoke one alone.
 
@@ -39,7 +39,7 @@ The [Terraform provider]({{< relref "/docs/features/terraform-provider" >}}) use
 
 Admins, **Settings → Audit log**: every state-changing request, every sign-in (`GET /auth/callback`, successful or not), and every request refused as unauthenticated or forbidden (401/403), reads included. Each workspace a [template rollout]({{< relref "/docs/features/workspaces#update-to-a-new-module-version" >}}) upgrades gets its own entry (`template rollout`, with the workspace, module, versions and run), in the name of the admin who started it. The page shows the changes; sign-ins and refused requests are on their own tab (`/audit?show=access`).
 
-- Each entry records the principal (`user` for a browser session, `token` for the Terraform CLI, `system` for VCS polling (actor `vcs`) and `opsolete token` (actor `cli`), or `anonymous`) with its id, role and groups; the client address, `X-Forwarded-For` as sent and user agent; method, path and form; and the status and error message.
+- Each entry records the principal (`user` for a browser session, `token` for the Terraform CLI, `system` for VCS polling (actor `vcs`) and `ops token` (actor `cli`), or `anonymous`) with its id, role and groups; the client address, `X-Forwarded-For` as sent and user agent; method, path and form; and the status and error message.
 - Variable values, tokens and OAuth codes are recorded as `(redacted)`.
 - The `audit_log` table refuses `UPDATE`, `DELETE` and `TRUNCATE`; each entry carries an HMAC-SHA256 under `SECRET_KEY` over its content and the previous entry's hash, so database access alone can't rewrite or forge entries, and the page re-verifies the chain and names the first broken entry.
 - Every entry is also written to stdout as a JSON log line (`"msg":"audit"`, with its hash): ship it with your log collector, which keeps a copy the database owner can't touch and reveals removed newest entries.

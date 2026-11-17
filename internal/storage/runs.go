@@ -11,9 +11,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage/db"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage/db"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // Run statuses. A workspace has at most one active run (enforced by runs_one_active_idx); pending runs wait
@@ -312,8 +312,8 @@ func removeTemplates(ctx context.Context, q *db.Queries, workspaceID uuid.UUID, 
 // Notification channels, listened to by app.Notifier. They are sent inside the transaction of the
 // change, so Postgres delivers them on commit (never for a rollback); payloads are ids only.
 const (
-	JobsChannel = "opsolete_jobs" // a job may have become claimable (no payload)
-	RunsChannel = "opsolete_runs" // a run's log or status changed (payload: the run id)
+	JobsChannel = "ops_jobs" // a job may have become claimable (no payload)
+	RunsChannel = "ops_runs" // a run's log or status changed (payload: the run id)
 )
 
 // notifyJobs: a run was queued (createRun, QueueVCSRun, QueueAssessments, setStatus) or a state

@@ -19,9 +19,9 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // runVariables opens the variables of a workspace's run: environment variables for Terraform's

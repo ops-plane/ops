@@ -19,17 +19,17 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/config"
-	httpserver "github.com/opsolete/opsolete/internal/http"
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/runner"
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
-	"github.com/opsolete/opsolete/internal/testdb"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/config"
+	httpserver "github.com/ops-plane/ops/internal/http"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/runner"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
+	"github.com/ops-plane/ops/internal/testdb"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // TestAzureImport runs an import session against real Azure (only with OPS_AZURE_E2E=1 and ARM_CLIENT_ID,
@@ -55,7 +55,7 @@ func TestAzureImport(t *testing.T) {
 	}
 	ctx := context.Background()
 	rg := "ops-e2e-" + strings.ToLower(uuid.NewString()[:8])
-	cache := filepath.Join(os.TempDir(), "opsolete-e2e-plugins")
+	cache := filepath.Join(os.TempDir(), "ops-e2e-plugins")
 	os.MkdirAll(cache, 0o755)
 	t.Setenv("TF_PLUGIN_CACHE_DIR", cache)
 
@@ -113,7 +113,7 @@ resource "azurerm_resource_group" "pre" {
 	}
 	keys, _ := secrets.New("e2e-secret-key", "")
 	dir := t.TempDir()
-	tpl := `{"id": "rg", "name": "Resource group", "module": {"source": "opsolete.localhost:8080/e2e/rg/azurerm", "ref": "1.0.0"},
+	tpl := `{"id": "rg", "name": "Resource group", "module": {"source": "ops.localhost:8080/e2e/rg/azurerm", "ref": "1.0.0"},
 		"inputs": [{"name": "name", "type": "string", "required": true, "key": true},
 		{"name": "location", "type": "select", "options": ["westeurope", "northeurope"], "default": "westeurope"},
 		{"name": "tags", "type": "map"}, {"name": "existing", "type": "bool"}]}`
@@ -122,7 +122,7 @@ resource "azurerm_resource_group" "pre" {
 	if err != nil {
 		t.Fatal(err)
 	}
-	public, _ := url.Parse("http://opsolete.localhost:8080")
+	public, _ := url.Parse("http://ops.localhost:8080")
 	a := &app.App{Store: store, Blobs: memblob.OpenBucket(nil), Secrets: keys, Templates: tpls, Log: log,
 		Registry: &registry.Registry{PublicURL: public, Key: []byte("e2e-registry-key")}, RegistryEnabled: true, VCS: vcs.NewClient(nil)}
 	au, err := auth.New(ctx, auth.Config{DevUser: "admin@example.com", Admins: []string{"admin@example.com"}, PublicURL: public}, []byte("k"), store)

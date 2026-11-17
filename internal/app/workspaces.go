@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/gcerrors"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 var nameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,62}$`)

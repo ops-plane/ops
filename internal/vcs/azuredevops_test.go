@@ -70,16 +70,16 @@ func TestAzureDevOpsRequests(t *testing.T) {
 	if files, _ := readTarGz(archive); err != nil || len(files) != 1 || files[0].name != "a.json" {
 		t.Fatalf("archive: %v %v", files, err)
 	}
-	if err := c.CreateBranch(ctx, repo, "opsolete/x", "c1"); err != nil {
+	if err := c.CreateBranch(ctx, repo, "ops/x", "c1"); err != nil {
 		t.Fatal(err)
 	}
-	if err := c.CommitFile(ctx, repo, "opsolete/x", "c1", "catalog/new.json", []byte("{}"), true, "Add"); err != nil {
+	if err := c.CommitFile(ctx, repo, "ops/x", "c1", "catalog/new.json", []byte("{}"), true, "Add"); err != nil {
 		t.Fatal(err)
 	}
 	if err := c.CommitFile(ctx, repo, "main", "h1", "catalog/a.json", nil, false, "Remove"); err != nil {
 		t.Fatal(err)
 	}
-	if u, err := c.OpenPR(ctx, repo, "opsolete/x", "main", "Add", "body"); err != nil || u != ts.URL+"/org/Platform%20Team/_git/cat/pullrequest/9" {
+	if u, err := c.OpenPR(ctx, repo, "ops/x", "main", "Add", "body"); err != nil || u != ts.URL+"/org/Platform%20Team/_git/cat/pullrequest/9" {
 		t.Fatalf("pr: %q %v", u, err)
 	}
 	p := "/org/Platform Team/_apis/git/repositories/cat"
@@ -91,10 +91,10 @@ func TestAzureDevOpsRequests(t *testing.T) {
 		"GET " + p + "/refs?api-version=7.1&filter=heads%2Fnope",
 		"GET " + p + "/pullrequests?%24top=100&api-version=7.1&searchCriteria.status=active&searchCriteria.targetRefName=refs%2Fheads%2Fmain",
 		"GET " + p + "/items?%24format=zip&api-version=7.1&download=true&path=%2F&versionDescriptor.version=c1&versionDescriptor.versionType=commit",
-		"POST " + p + `/refs?api-version=7.1 [{"name":"refs/heads/opsolete/x","newObjectId":"c1","oldObjectId":"0000000000000000000000000000000000000000"}]`,
-		"POST " + p + `/pushes?api-version=7.1 {"commits":[{"changes":[{"changeType":"add","item":{"path":"/catalog/new.json"},"newContent":{"content":"{}","contentType":"rawtext"}}],"comment":"Add"}],"refUpdates":[{"name":"refs/heads/opsolete/x","oldObjectId":"c1"}]}`,
+		"POST " + p + `/refs?api-version=7.1 [{"name":"refs/heads/ops/x","newObjectId":"c1","oldObjectId":"0000000000000000000000000000000000000000"}]`,
+		"POST " + p + `/pushes?api-version=7.1 {"commits":[{"changes":[{"changeType":"add","item":{"path":"/catalog/new.json"},"newContent":{"content":"{}","contentType":"rawtext"}}],"comment":"Add"}],"refUpdates":[{"name":"refs/heads/ops/x","oldObjectId":"c1"}]}`,
 		"POST " + p + `/pushes?api-version=7.1 {"commits":[{"changes":[{"changeType":"delete","item":{"path":"/catalog/a.json"}}],"comment":"Remove"}],"refUpdates":[{"name":"refs/heads/main","oldObjectId":"h1"}]}`,
-		"POST " + p + `/pullrequests?api-version=7.1 {"description":"body","sourceRefName":"refs/heads/opsolete/x","targetRefName":"refs/heads/main","title":"Add"}`,
+		"POST " + p + `/pullrequests?api-version=7.1 {"description":"body","sourceRefName":"refs/heads/ops/x","targetRefName":"refs/heads/main","title":"Add"}`,
 	}
 	if !slices.Equal(got, want) {
 		t.Fatalf("requests:\n%s", strings.Join(got, "\n"))

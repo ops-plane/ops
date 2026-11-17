@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // CreateSession stores a new browser session and returns its token (256 random bits), the cookie's value.

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // View helpers: template funcs and the values pages show.

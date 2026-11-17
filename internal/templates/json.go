@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaURL is the JSON Schema of the template format (docs/static/schema/template-1.json), written into every file Encode makes.
-const SchemaURL = "https://opsolete.github.io/Opsolete/schema/template-1.json"
+const SchemaURL = "https://ops-plane.github.io/ops/schema/template-1.json"
 
 // The template file format. In a file, default and show_if.equals are typed by the input's type
 // (string/select: string, number: number, bool: boolean); in Go they stay the form's strings ("7", "true").

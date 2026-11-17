@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
 )
 
 const mainTF = `variable "name" { type = string }`

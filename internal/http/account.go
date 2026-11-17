@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Account settings: the signed-in user's profile, browser sessions and `terraform login`

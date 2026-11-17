@@ -15,7 +15,7 @@ greeting module from the server's own registry; skipped without `terraform` on P
 and the NixOS VM test (`nix/test.nix`, boots both, runs no job) remain outside `go test`; `just smoke` only
 creates and lists a workspace.
 
-Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repository root).
+Test paths are relative to `internal/`, except `cmd/ops/…` (from the repository root).
 
 ---
 
@@ -24,7 +24,7 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 **A1. First start + first admin login** — `full` (login), `partial` (startup)
 - Actor: operator deploying; first admin (in `ADMIN_EMAILS`/`ADMIN_GROUPS`).
 - Pre: Postgres, `SECRET_KEY` ≥ 32 and `STATE_STORE` (with deployments), OIDC or `AUTH_DEV_USER`.
-- Steps: start `opsolete` (migrations, signing key, state store probe, catalog load, `CheckTemplates`) → open UI → redirected to `/auth/login` → IdP → `/auth/callback` → session cookie.
+- Steps: start `ops` (migrations, signing key, state store probe, catalog load, `CheckTemplates`) → open UI → redirected to `/auth/login` → IdP → `/auth/callback` → session cookie.
 - Outcome: user row keyed by issuer+sub, groups recorded, role admin/user re-derived every request; sign-in audited.
 - Failures: bad config (startup error); forged state/nonce, `email_verified:false`, email of another subject → 4xx; open redirect blocked; `preferred_username` never matches `ADMIN_EMAILS`.
 - Coverage: `auth/auth_test.go:TestOIDCLogin`, `TestOIDCLoginRejects`, `TestSessionCookie`, `TestLocalPath`; `storage/storage_test.go:TestUpsertUserSubject`; `http/server_test.go:TestLoginRequired`; `config/config_test.go:TestLoad`; `http/server_test.go:TestFeatureSwitches` (CheckTemplates). Missing: `serve()` startup checks (STATE_STORE probe, `AUTH_DEV_USER` warning) untested.
@@ -348,7 +348,7 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 - Coverage: `http/registry_test.go:TestRegistry`.
 
 **J5. `terraform init` against the registry** — `full`
-- Registry token (`opsolete token`) or `terraform login` token; versions → download (`X-Terraform-Get` signed 10-min URL) → archive; tampered signature 403.
+- Registry token (`ops token`) or `terraform login` token; versions → download (`X-Terraform-Get` signed 10-min URL) → archive; tampered signature 403.
 - Runs: a job's registry token (its run's, read-only, only while a runner works on it) lets a template's module call other registry modules; the runner writes it as a CLI `credentials` block.
 - Coverage: `http/registry_test.go:TestRegistry`; `http/access_test.go:TestAccessMatrix` (registry rows: user and registry tokens allowed, the runner token refused); `registry/registry_test.go:TestAddressAndSigning`; `http/scan_test.go:TestRunRegistryToken` (valid while working, not after, not tampered); `runner/scan_test.go:TestCLIConfig`; `e2e/e2e_test.go:TestRealRunner/a_template's_module_calls_another_registry_module…` (real runner and Terraform, over plain HTTP: the nested module downloads with the run's token).
 
@@ -373,7 +373,7 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 - Coverage: `http/catalog_test.go:TestTemplateCatalogInGit` (steps "the builder commits…", "a save based on an outdated file…", "deleting in commit mode…"); `vcs/writes_test.go:TestGitHubWrites`, `TestAzureDevOpsWrites`.
 
 **K4. Builder, pull request mode** — `partial`
-- New template → branch `opsolete/template-<id>-…` + PR; saving again adds a commit to that PR; deleting always opens its own PR.
+- New template → branch `ops/template-<id>-…` + PR; saving again adds a commit to that PR; deleting always opens its own PR.
 - Coverage: `http/catalog_test.go:TestTemplateCatalogInGit/pull_request_mode_opens_one_pull_request…`. Missing: delete in PR mode.
 
 **K5. Disconnect the Git catalog** — `full`
@@ -445,21 +445,21 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 - Hourly leader job: logs deleted `RUN_LOG_RETENTION_DAYS` after the run ended (page/raw/stream say so); assess and speculative plans deleted after 30 days except the latest per rules; never active runs; batches of 1000.
 - Coverage: `app/retention_test.go:TestRetention`, `TestRetentionBatches`; `http/runs_test.go:TestRemovedLog`; `config/config_test.go:TestLoad`.
 
-**P2. Key rotation (`opsolete rotate-key`)** — `full`
+**P2. Key rotation (`ops rotate-key`)** — `full`
 - Restart with both keys → rotate (re-seal variables, VCS tokens, sensitive inputs in every configuration version, state files, plans; runs may go on; idempotent) → drop `SECRET_KEY_PREVIOUS`.
-- Coverage: `cmd/opsolete/main_test.go:TestRotateKeyCLI` (refused without `SECRET_KEY_PREVIOUS`, with it equal or short, with an unusable `STATE_STORE`, none audited; a variable and a state store file re-sealed, audited with the count; again: 0); `app/rotate_test.go:TestRotateKey`, `TestRotateKeyRace` (a value changed meanwhile keeps the server's write and fails the rotation; a rotation with a run active succeeds); `secrets/secrets_test.go:TestRotation`; `storage/audit_test.go:TestAuditLogKeyRotation`.
+- Coverage: `cmd/ops/main_test.go:TestRotateKeyCLI` (refused without `SECRET_KEY_PREVIOUS`, with it equal or short, with an unusable `STATE_STORE`, none audited; a variable and a state store file re-sealed, audited with the count; again: 0); `app/rotate_test.go:TestRotateKey`, `TestRotateKeyRace` (a value changed meanwhile keeps the server's write and fails the rotation; a rotation with a run active succeeds); `secrets/secrets_test.go:TestRotation`; `storage/audit_test.go:TestAuditLogKeyRotation`.
 
-**P3. Registry token from the CLI (`opsolete token <name>`)** — `full`
+**P3. Registry token from the CLI (`ops token <name>`)** — `full`
 - Prints the token on stdout only, audits `create token`.
-- Coverage: `cmd/opsolete/main_test.go:TestCreateToken` (stdout is the token alone, it works as a registry token, the audit entry names it without the token).
+- Coverage: `cmd/ops/main_test.go:TestCreateToken` (stdout is the token alone, it works as a registry token, the audit entry names it without the token).
 
 **P4. Health, readiness, metrics** — `partial`
-- `/healthz`, `/readyz` (503 without DB), `METRICS_ADDR` listener with request/run/DB metrics and `opsolete_scheduler_leader`.
+- `/healthz`, `/readyz` (503 without DB), `METRICS_ADDR` listener with request/run/DB metrics and `ops_scheduler_leader`.
 - Coverage: `http/server_test.go:TestPublicPages`; `http/metrics_test.go:TestRequestMetricsUseRoutePattern`, `TestDatabaseMetrics`; `http/access_test.go:TestAccessMatrix` (healthz/readyz 200). Missing: readyz 503; the separate metrics listener.
 
 **P5. Scheduler leader and failover (multi-replica)** — `full`
 - One advisory-lock leader runs non-Local jobs; dead session → jobs cancelled, another replica leads within the retry; Local jobs everywhere; jobs never overlap, survive panics.
-- Coverage: `app/scheduler_test.go:TestSchedulerLeader`, `TestRunJobs`. (The job list in `cmd/opsolete:jobs()` itself is untested.)
+- Coverage: `app/scheduler_test.go:TestSchedulerLeader`, `TestRunJobs`. (The job list in `cmd/ops:jobs()` itself is untested.)
 
 **P6. Notifications (LISTEN/NOTIFY)** — `full`
 - Queueing wakes claims; log/status wake their run's streams; lock release wakes claims; rolled-back notifications not delivered; reconnect with fallback polling.
@@ -470,7 +470,7 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 ## Q. Runner lifecycle
 
 **Q1. Runner start and configuration** — `partial`
-- `opsolete runner` with `OPS_SERVER_URL`, `OPS_RUNNER_TOKEN` (its own token, `http/runners_test.go:TestRunners`, `storage/jobs_test.go:TestRunnerPools`; scrubbed from env), timeouts; non-dumpable, child subreaper (refuses to start without).
+- `ops runner` with `OPS_SERVER_URL`, `OPS_RUNNER_TOKEN` (its own token, `http/runners_test.go:TestRunners`, `storage/jobs_test.go:TestRunnerPools`; scrubbed from env), timeouts; non-dumpable, child subreaper (refuses to start without).
 - Coverage: `config/config_test.go:TestLoadRunner`; NixOS VM test `nix/test.nix` (outside `go test`). Missing: startup refusal when subreaper fails (unverified testable).
 
 **Q2. Claim, acknowledge, heartbeat, log, artifacts, finish** — `full`
@@ -487,7 +487,7 @@ Test paths are relative to `internal/`, except `cmd/opsolete/…` (from the repo
 
 **Q5. Drain / scale down (first SIGTERM)** — `full`
 - Stops claiming; a claim in flight completes, is acked and run; then the runner exits.
-- Coverage: `runner/runner_test.go:TestDrainKeepsClaimedJob`. (The signal handler in `cmd/opsolete:runRunner` is untested.)
+- Coverage: `runner/runner_test.go:TestDrainKeepsClaimedJob`. (The signal handler in `cmd/ops:runRunner` is untested.)
 
 **Q6. Interrupts: timeout + grace, cancel, second SIGTERM** — `full`
 - SIGINT, then kill after `OPS_JOB_GRACE`; messages name cause and outcome; no logs/heartbeats past the hard end.
@@ -569,11 +569,11 @@ None left (closed in step 2: `http/flows_test.go`, `http/cloud_gotfe_test.go:Tes
 
 ### P2 — secondary flows
 
-None left (closed in step 2: `http/flows_test.go` (`TestDriftChecks`, `TestRollout`, `TestDefaultProject`, `TestVariableSetLifecycle`, `TestDeleteVCSConnection`, `TestExecutionMode`), `http/server_test.go:TestLogout`, `http/audit_test.go:TestAuditLogTampered`, the runner-token column of `http/access_test.go:TestAccessMatrix`, `http/workspacetemplates_test.go:TestSensitiveInputs` (`Secrets`), `e2e/e2e_test.go:TestRealRunner` (template removal, sensitive input masked), `app/state_test.go:TestReleaseOrphanedLocks`, `app/vcsruns_test.go:TestPollVCSRuns`, `app/rotate_test.go:TestRotateKeyRace`, `cmd/opsolete/main_test.go:TestRotateKeyCLI`).
+None left (closed in step 2: `http/flows_test.go` (`TestDriftChecks`, `TestRollout`, `TestDefaultProject`, `TestVariableSetLifecycle`, `TestDeleteVCSConnection`, `TestExecutionMode`), `http/server_test.go:TestLogout`, `http/audit_test.go:TestAuditLogTampered`, the runner-token column of `http/access_test.go:TestAccessMatrix`, `http/workspacetemplates_test.go:TestSensitiveInputs` (`Secrets`), `e2e/e2e_test.go:TestRealRunner` (template removal, sensitive input masked), `app/state_test.go:TestReleaseOrphanedLocks`, `app/vcsruns_test.go:TestPollVCSRuns`, `app/rotate_test.go:TestRotateKeyRace`, `cmd/ops/main_test.go:TestRotateKeyCLI`).
 
 ### P3 — nice to have (7)
 
-Closed alongside P2: `opsolete token` (`cmd/opsolete/main_test.go:TestCreateToken`), the 256 KB log post limit (`http/logs_test.go:TestLogPostLimit`).
+Closed alongside P2: `ops token` (`cmd/ops/main_test.go:TestCreateToken`), the 256 KB log post limit (`http/logs_test.go:TestLogPostLimit`).
 
 1. I1 Azure DevOps through the HTTP flows (connect, link, catalog write) — http e2e with a fake ADO.
 2. K4 Delete a template in PR mode opens its own PR — http e2e.

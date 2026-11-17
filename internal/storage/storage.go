@@ -22,8 +22,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 //go:embed migrations/*.sql

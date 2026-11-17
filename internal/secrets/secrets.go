@@ -1,7 +1,7 @@
 // Package secrets seals values with SECRET_KEY (AES-256-GCM) and opens them with SECRET_KEY or
 // SECRET_KEY_PREVIOUS, so a key rotation needs a restart, not downtime.
 //
-// Sealed format: "opsolete:1:" + key id (16 hex) + ":" + nonce (12 bytes) + ciphertext. The key id
+// Sealed format: "ops:1:" + key id (16 hex) + ":" + nonce (12 bytes) + ciphertext. The key id
 // names the key that sealed it (see keyID); the associated data (ad) is not stored: the caller
 // passes the same ad to Open, so a value copied to another row or file doesn't open there.
 package secrets
@@ -17,7 +17,7 @@ import (
 	"fmt"
 )
 
-const prefix = "opsolete:1:"
+const prefix = "ops:1:"
 
 // idLen is the key id's length in hex.
 const idLen = 16
@@ -54,8 +54,8 @@ func New(current, previous string) (*Keyring, error) {
 
 // derive turns a secret into an AES-256 key and its key id: a hash of the key, which doesn't reveal it.
 func derive(secret string) key {
-	raw := sha256.Sum256([]byte("opsolete seal\n" + secret))
-	id := sha256.Sum256(append([]byte("opsolete key id\n"), raw[:]...))
+	raw := sha256.Sum256([]byte("ops seal\n" + secret))
+	id := sha256.Sum256(append([]byte("ops key id\n"), raw[:]...))
 	b, _ := aes.NewCipher(raw[:]) // a 32-byte key never fails
 	g, _ := cipher.NewGCM(b)
 	return key{id: hex.EncodeToString(id[:idLen/2]), aead: g}

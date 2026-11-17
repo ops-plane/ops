@@ -12,7 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/app"
+	"github.com/ops-plane/ops/internal/app"
 )
 
 // A run's log: as plain text, and followed live (Server-Sent Events) by the run page.

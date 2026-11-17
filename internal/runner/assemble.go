@@ -14,15 +14,15 @@ import (
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 const (
-	varsFile    = "opsolete.tfvars.json" // the workspace's Terraform variables, passed with -var-file
-	planFile    = "opsolete.tfplan"
+	varsFile    = "ops.tfvars.json" // the workspace's Terraform variables, passed with -var-file
+	planFile    = "ops.tfplan"
 	lockFile    = ".terraform.lock.hcl"
-	modulesFile = "opsolete_templates.tf.json" // module blocks of the workspace's added templates
-	outputsFile = "opsolete_outputs.tf.json"   // their outputs, as root outputs
+	modulesFile = "ops_templates.tf.json" // module blocks of the workspace's added templates
+	outputsFile = "ops_outputs.tf.json"   // their outputs, as root outputs
 )
 
 // dropRemoved finishes removing templates after the destroy limited to them (-target=module.<name>):
@@ -44,7 +44,7 @@ func dropRemoved(ctx context.Context, tf *tfProc, run func(...string) (bool, err
 	if err := writeOutputs(dir, left); err != nil {
 		return err
 	}
-	const cleanupPlan = "opsolete-cleanup.tfplan"
+	const cleanupPlan = "ops-cleanup.tfplan"
 	fmt.Fprintln(w, "\n==> terraform plan -refresh=false (without the removed templates, to drop their outputs)")
 	changes, err := run("plan", "-input=false", "-detailed-exitcode", "-out="+cleanupPlan, "-refresh=false", "-var-file="+varsFile)
 	if err != nil || !changes {

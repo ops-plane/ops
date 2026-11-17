@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 const maxLogChunk = 256 << 10 // per request
@@ -32,7 +32,7 @@ func (s *Server) runnerRoutes(mux routes) {
 // runnerKey is the context key of the runner a request authenticated as (requireRunner).
 type runnerKey struct{}
 
-// requireRunner admits requests bearing a registered runner's token (opsolete runner-token, or the
+// requireRunner admits requests bearing a registered runner's token (ops runner-token, or the
 // Runners settings page); the handler finds the runner with runnerOf.
 func (s *Server) requireRunner(next http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

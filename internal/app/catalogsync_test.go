@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 func TestCatalogFiles(t *testing.T) {
@@ -37,7 +37,7 @@ func TestTokenHint(t *testing.T) {
 	ctx := context.Background()
 	for _, err := range []error{
 		c.CommitFile(ctx, "acme/cat", "main", "base1", "catalog/a.json", nil, false, "Remove"),
-		c.CreateBranch(ctx, "acme/cat", "opsolete/x", "base1"),
+		c.CreateBranch(ctx, "acme/cat", "ops/x", "base1"),
 	} {
 		if msg := tokenHint(err).Error(); !strings.Contains(msg, "Change access token") || !strings.Contains(msg, "Bad credentials") {
 			t.Fatalf("hint: %s", msg)

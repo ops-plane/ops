@@ -9,8 +9,8 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // found reads, from a plan that imports, what the imported resources are: per template module (mods), each input

@@ -24,7 +24,7 @@ db-start: env
     fresh=0
     [ -d "$PGDATA" ] || { initdb --auth=trust --no-locale --encoding=UTF8 >/dev/null; fresh=1; }
     pg_ctl -o "{{pg_opts}}" -l "$PGHOST/postgres.log" -w start >/dev/null
-    [ "$fresh" = 1 ] && createdb opsolete && createdb opsolete_test
+    [ "$fresh" = 1 ] && createdb ops && createdb ops_test
     echo "postgres running (socket in $PGHOST)"
 
 # stop local postgres
@@ -40,7 +40,7 @@ seed: db-start
     #!/usr/bin/env bash
     set -euo pipefail
     base=http://127.0.0.1:18081 bin="$PGHOST/ops-seed" out="$PGHOST/seed.out"
-    go build -o "$bin" ./cmd/opsolete
+    go build -o "$bin" ./cmd/ops
     ADDR=127.0.0.1:18081 "$bin" > "$PGHOST/seed.log" 2>&1 &
     pids=$!
     trap 'kill $pids 2>/dev/null || true' EXIT
@@ -92,21 +92,21 @@ psql: db-start
 
 # run the app on :8080 (starts postgres first)
 run: db-start
-    go run ./cmd/opsolete
+    go run ./cmd/ops
 
 # create a registry API token (TF_TOKEN_<host>), printed once
 token name: db-start
-    @go run ./cmd/opsolete token "{{name}}"
+    @go run ./cmd/ops token "{{name}}"
 
 # run a runner on this machine against `just run` (registered as runner "dev", default pool)
 runner: db-start
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "$DEV_RUNNER_TOKEN" | go run ./cmd/opsolete runner-token -from-stdin dev
+    echo "$DEV_RUNNER_TOKEN" | go run ./cmd/ops runner-token -from-stdin dev
     export OPS_RUNNER_TOKEN=$DEV_RUNNER_TOKEN
     unset DEV_RUNNER_TOKEN # OPS_* is hidden from jobs, this isn't
     export OPS_SERVER_URL=${OPS_SERVER_URL:-http://127.0.0.1:8080}
-    exec go run ./cmd/opsolete runner
+    exec go run ./cmd/ops runner
 
 # build a container image with nix and load it into docker: target is app or runner (needs a linux builder on macOS)
 image target:
@@ -140,7 +140,7 @@ test-linux:
     for init in "" --init; do
         echo "==> Linux tests ${init:-plain}"
         # exec: without --init the runner test binary replaces the shell as PID 1
-        docker run --rm $init -v "$PWD:/src" -w /src -v "$(go env GOMODCACHE):/go/pkg/mod" -v opsolete-linux-gocache:/root/.cache/go-build \
+        docker run --rm $init -v "$PWD:/src" -w /src -v "$(go env GOMODCACHE):/go/pkg/mod" -v ops-linux-gocache:/root/.cache/go-build \
             -v "$PWD/$bin:/usr/local/bin/terraform:ro" -e CGO_ENABLED=0 -e GOTOOLCHAIN=local -e GOFLAGS=-buildvcs=false "golang:$go" \
             sh -c 'go test -count=1 ./... && go test -c -o /tmp/runner.test ./internal/runner && cd internal/runner && echo "runner test binary: PID $$" && exec /tmp/runner.test -test.count=1 -test.v'
     done
@@ -149,7 +149,7 @@ test-linux:
     # for that user: Ubuntu's AppArmor sysctl (the Docker VM's or CI host's kernel; set back afterwards) and the
     # default seccomp profile.
     echo "==> Linux tests: runner in the job sandbox, non-root"
-    docker run --rm --privileged -v "$PWD:/src" -w /src -v "$(go env GOMODCACHE):/go/pkg/mod" -v opsolete-linux-gocache:/root/.cache/go-build \
+    docker run --rm --privileged -v "$PWD:/src" -w /src -v "$(go env GOMODCACHE):/go/pkg/mod" -v ops-linux-gocache:/root/.cache/go-build \
         -v "$PWD/$bin:/usr/local/bin/terraform:ro" -e CGO_ENABLED=0 -e GOTOOLCHAIN=local -e GOFLAGS=-buildvcs=false "golang:$go" sh -c '
             set -e
             aa=/proc/sys/kernel/apparmor_restrict_unprivileged_userns
@@ -177,7 +177,7 @@ build: vendorhash
 smoke: build db-start
     #!/usr/bin/env bash
     set -euo pipefail
-    ADDR=127.0.0.1:18080 ./result/bin/opsolete > "$PGHOST/smoke.log" 2>&1 &
+    ADDR=127.0.0.1:18080 ./result/bin/ops > "$PGHOST/smoke.log" 2>&1 &
     pid=$!
     trap 'kill $pid 2>/dev/null' EXIT
     for _ in $(seq 50); do curl -sf 127.0.0.1:18080/readyz >/dev/null && break; sleep 0.1; done
@@ -194,7 +194,7 @@ check: test smoke
 # stop background services
 down: db-stop
 
-# preview the documentation site (docs/) on http://localhost:1313/Opsolete/
+# preview the documentation site (docs/) on http://localhost:1313/ops/
 docs:
     hugo server -s docs
 

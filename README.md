@@ -2,6 +2,8 @@
 
 **Pick. Plan. Apply.**
 
+_Formerly Opsolete (github.com/Opsolete/Opsolete)._
+
 Most teams have a few people who write good Terraform and a lot of people who just need a storage account, a resource group or a VM by Friday. OPS sits between them. The people who know Terraform turn their modules into templates. Everyone else picks a template, fills in a short form, reviews the plan and applies it.
 
 It's self-hosted, it runs your existing modules as they are, and it doesn't hide what Terraform is doing: every change is a run you can follow line by line in the browser.
@@ -17,7 +19,7 @@ It's self-hosted, it runs your existing modules as they are, and it doesn't hide
 
 ## Try it
 
-With [Nix](https://nixos.org/download/) it's a few commands. Without it you need Go, PostgreSQL and Terraform; the [documentation](https://opsolete.github.io/Opsolete/) walks you through that.
+With [Nix](https://nixos.org/download/) it's a few commands. Without it you need Go, PostgreSQL and Terraform; the [documentation](https://ops-plane.github.io/ops/) walks you through that.
 
 ```sh
 nix develop        # or `direnv allow`
@@ -26,17 +28,17 @@ just run           # postgres + app on :8080
 just runner        # in a second terminal: a runner on this machine
 ```
 
-Then open http://opsolete.localhost:8080. Locally you're signed in as `dev@localhost`, an admin, so you can try everything straight away.
+Then open http://ops.localhost:8080. Locally you're signed in as `dev@localhost`, an admin, so you can try everything straight away.
 
 Working on OPS itself? `just check` runs the tests and a smoke test, and `just docs` previews the documentation.
 
 ## Where it's at
 
-OPS is at <!-- x-release-please-start-version -->0.9.0<!-- x-release-please-end --> and heading for 1.0. Version 0.6 was a rebuild and needs a fresh install: see [Upgrading](https://opsolete.github.io/Opsolete/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
+OPS is at <!-- x-release-please-start-version -->0.9.0<!-- x-release-please-end --> and heading for 1.0. Version 0.6 was a rebuild and needs a fresh install: see [Upgrading](https://ops-plane.github.io/ops/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Documentation
 
-Everything else, from writing templates to running OPS on Kubernetes, is at **https://opsolete.github.io/Opsolete/**. The source is in [`docs/`](docs/content/docs).
+Everything else, from writing templates to running OPS on Kubernetes, is at **https://ops-plane.github.io/ops/**. The source is in [`docs/`](docs/content/docs).
 
 ## License
 

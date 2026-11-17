@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Organization settings and the audit log: admins only. Stats and Ready are for monitoring.

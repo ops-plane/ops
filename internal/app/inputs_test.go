@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // A sensitive input left empty keeps its stored value; one with a rejected new value keeps the error.

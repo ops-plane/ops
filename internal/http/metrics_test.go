@@ -34,8 +34,8 @@ func TestDatabaseMetrics(t *testing.T) {
 	store := testStore(t)
 	newApp(t, "../../catalog", store, devAuth(t, store, "admin@example.com", true), Features{Deployments: true}).MetricsHandler()
 	body := scrape(t)
-	for _, want := range []string{`opsolete_runs{status="plan_queued"}`, "opsolete_run_queue_oldest_seconds ", "opsolete_workspaces ",
-		`go_sql_max_open_connections{db_name="opsolete"}`, "go_goroutines ", "process_"} {
+	for _, want := range []string{`ops_runs{status="plan_queued"}`, "ops_run_queue_oldest_seconds ", "ops_workspaces ",
+		`go_sql_max_open_connections{db_name="ops"}`, "go_goroutines ", "process_"} {
 		if !strings.Contains(body, want) {
 			t.Errorf("metrics lack %s", want)
 		}

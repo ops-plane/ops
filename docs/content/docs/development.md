@@ -21,7 +21,7 @@ go test -run 'TestDocumented|TestEndpointsDocumented' ./internal/config ./intern
 
 ## Documentation
 
-This site lives in `docs/` (Hugo with the [Hextra](https://imfing.github.io/hextra/) theme, loaded as a Hugo module). Preview it with `just docs` and open http://localhost:1313/Opsolete/. Pages are in `docs/content/docs/`; link between them with `{{</* relref "…" */>}}`, so a broken link fails the build.
+This site lives in `docs/` (Hugo with the [Hextra](https://imfing.github.io/hextra/) theme, loaded as a Hugo module). Preview it with `just docs` and open http://localhost:1313/ops/. Pages are in `docs/content/docs/`; link between them with `{{</* relref "…" */>}}`, so a broken link fails the build.
 
 ## CI and releases
 
@@ -36,7 +36,7 @@ This site lives in `docs/` (Hugo with the [Hextra](https://imfing.github.io/hext
 
 Go comes prebuilt from cache.nixos.org (nixpkgs' `go`), so no job compiles a toolchain: keep `flake.lock` fresh (`nix flake update`) to get Go's security releases. Terraform's version is in `.terraform-version`, read by CI, `just test-linux` and the flake (update the flake's checksums with it).
 
-`codeql.yml` runs CodeQL on PRs, pushes to `master` and weekly; findings land under *Security › Code scanning*. `docs.yml` builds this site on PRs that touch `docs/` and publishes it to GitHub Pages (https://opsolete.github.io/Opsolete/) on pushes to `master` that touch `docs/`. Dependabot proposes Go module and action updates weekly (the docs theme monthly), a week after their release; on its Go PRs, `vendorhash.yml` fixes `vendorHash` and pushes to the PR branch.
+`codeql.yml` runs CodeQL on PRs, pushes to `master` and weekly; findings land under *Security › Code scanning*. `docs.yml` builds this site on PRs that touch `docs/` and publishes it to GitHub Pages (https://ops-plane.github.io/ops/) on pushes to `master` that touch `docs/`. Dependabot proposes Go module and action updates weekly (the docs theme monthly), a week after their release; on its Go PRs, `vendorhash.yml` fixes `vendorHash` and pushes to the PR branch.
 
 ### Versions come from commit messages
 
@@ -49,7 +49,7 @@ Go comes prebuilt from cache.nixos.org (nixpkgs' `go`), so no job compiles a too
 | `feat!: …` or a `BREAKING CHANGE:` footer | 0.10.0 (pre-1.0, breaking bumps minor) | major |
 | `docs:`, `chore:`, `ci:`, `test:`, `refactor:`, … | no release | no release |
 
-On each push to `master`, once every check passed, the `release-please` job at the end of `ci.yml` runs release-please, which keeps a **release PR** open. It holds the next version and the [`CHANGELOG.md`](https://github.com/Opsolete/Opsolete/blob/master/CHANGELOG.md) entries. Merging that PR tags `vX.Y.Z`, creates the GitHub release, and pushes `ghcr.io/opsolete/opsolete-app` and `-runner` (linux/amd64) tagged `X.Y.Z`, `X.Y`, `latest` and the commit's `sha-…`.
+On each push to `master`, once every check passed, the `release-please` job at the end of `ci.yml` runs release-please, which keeps a **release PR** open. It holds the next version and the [`CHANGELOG.md`](https://github.com/ops-plane/ops/blob/master/CHANGELOG.md) entries. Merging that PR tags `vX.Y.Z`, creates the GitHub release, and pushes `ghcr.io/ops-plane/ops-app` and `-runner` (linux/amd64) tagged `X.Y.Z`, `X.Y`, `latest` and the commit's `sha-…`.
 
 **Beta:** until 1.0.0, breaking changes only bump the minor version, and GitHub releases are marked *pre-release*. To go stable, remove `"prerelease": true` from `release-please-config.json` in a commit with a `Release-As: 1.0.0` footer.
 
@@ -59,7 +59,7 @@ Repo settings, one-time:
 
 1. **General → Pull Requests:** allow only *rebase merging*, so every commit (and its `BREAKING CHANGE` footer) reaches release-please. Not merge commits: GitHub puts the PR title in their body, which release-please counts a second time.
    ```sh
-   gh api -X PATCH repos/Opsolete/Opsolete -F allow_merge_commit=false -F allow_squash_merge=false \
+   gh api -X PATCH repos/ops-plane/ops -F allow_merge_commit=false -F allow_squash_merge=false \
      -F allow_rebase_merge=true -F delete_branch_on_merge=true
    ```
 2. **Rules → Rulesets → New branch ruleset** for `master`: require a pull request, require the status checks `commits`, `lint`, `test`, `runner-linux`, `nix` and `nixos-test`, block force pushes, and restrict deletions. Don't require the docs check: it only runs when `docs/` changes.
@@ -67,6 +67,6 @@ Repo settings, one-time:
 4. **Images:** GHCR packages start out private. Make them public, or give your cluster a pull secret.
 5. **Documentation:** **Settings → Pages → Source: GitHub Actions**, or:
    ```sh
-   gh api -X POST repos/Opsolete/Opsolete/pages -f build_type=workflow
+   gh api -X POST repos/ops-plane/ops/pages -f build_type=workflow
    ```
 6. **Dependabot vendorHash fix:** a fine-grained PAT with *contents* write access on this repo, saved as `DEPENDABOT_PUSH_TOKEN` under **both** *Secrets → Dependabot* and *Secrets → Actions*. Pushes made with `GITHUB_TOKEN` wouldn't trigger CI on the fixed commit.

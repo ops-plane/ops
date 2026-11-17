@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/opsolete/opsolete/internal/auth"
+	"github.com/ops-plane/ops/internal/auth"
 )
 
 // A database with a migration this version doesn't know is refused, and the message tells a newer

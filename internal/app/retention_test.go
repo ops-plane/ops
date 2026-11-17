@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/auth"
+	"github.com/ops-plane/ops/internal/auth"
 )
 
 // oldRun inserts a run of ws that ended (or, active, was last updated) daysAgo, created a minute

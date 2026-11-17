@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Errors of operations. Every surface (UI, cloud API, …) maps them in one error mapper:

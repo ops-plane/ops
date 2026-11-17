@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob"
 
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Everything secret is sealed with App.Secrets (internal/secrets) together with associated data
@@ -57,7 +57,7 @@ func (a *App) OpenToken(c storage.VCSConnection) (string, error) {
 }
 
 // SealedPrefix starts every state store file; a file without it isn't OPS's.
-const SealedPrefix = "opsolete-sealed-v1\n"
+const SealedPrefix = "ops-sealed-v1\n"
 
 // WriteBlob stores a state file or run artifact, sealed: they hold secrets, so bucket read access
 // alone must not expose them.

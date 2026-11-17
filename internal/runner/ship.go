@@ -10,8 +10,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // shipper buffers job output and posts it to the server about once a second, cut at line

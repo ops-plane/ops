@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/config"
+	"github.com/ops-plane/ops/internal/config"
 )
 
 // Whatever a job leaves running, also a setsid daemon or a double fork, is gone after the job,

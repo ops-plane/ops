@@ -31,7 +31,7 @@ type Config struct {
 	AdminEmails                                []string
 	AdminGroups                                []string
 	// StateStore is where workspace state files are kept: a gocloud.dev/blob URL such as
-	// azblob://tfstate, s3://tfstate?region=eu-west-1, gs://tfstate or file:///var/lib/opsolete/state.
+	// azblob://tfstate, s3://tfstate?region=eu-west-1, gs://tfstate or file:///var/lib/ops/state.
 	// Required by the server when deployments are on (checked there, so `token` works without it).
 	StateStore string
 	// PublicURL is how Terraform clients reach this app; its host is the module registry hostname
@@ -41,7 +41,7 @@ type Config struct {
 	// in STATE_STORE, and signs the audit log. Required.
 	SecretKey string
 	// SecretKeyPrevious is the SECRET_KEY being replaced: the server still opens values sealed with
-	// it (`opsolete rotate-key` re-seals them) and verifies the audit entries signed before the
+	// it (`ops rotate-key` re-seals them) and verifies the audit entries signed before the
 	// rotation with it. Optional.
 	SecretKeyPrevious string
 	// Organization is the one organization Terraform's cloud block may name.
@@ -70,7 +70,7 @@ func Load() (Config, error) {
 		AdminGroups:       strings.FieldsFunc(os.Getenv("ADMIN_GROUPS"), func(r rune) bool { return r == ',' }),
 		SecretKey:         os.Getenv("SECRET_KEY"),
 		SecretKeyPrevious: os.Getenv("SECRET_KEY_PREVIOUS"),
-		Organization:      getenv("ORGANIZATION", "opsolete"),
+		Organization:      getenv("ORGANIZATION", "ops"),
 	}
 	for i, g := range c.AuthDevGroups { // "a, b": group names must match the IdP's exactly
 		c.AuthDevGroups[i] = strings.TrimSpace(g)
@@ -104,10 +104,10 @@ func Load() (Config, error) {
 		return c, errors.New("DEPLOYMENTS_ENABLED and REGISTRY_ENABLED are both off: nothing to serve")
 	}
 
-	pu, err := url.Parse(getenv("PUBLIC_URL", "http://opsolete.localhost:8080"))
+	pu, err := url.Parse(getenv("PUBLIC_URL", "http://ops.localhost:8080"))
 	if err != nil || (pu.Scheme != "http" && pu.Scheme != "https") || !strings.Contains(pu.Hostname(), ".") || pu.Path != "" && pu.Path != "/" ||
 		pu.User != nil || pu.RawQuery != "" || pu.ForceQuery || pu.Fragment != "" {
-		return c, errors.New("PUBLIC_URL must be like https://opsolete.example.com (a hostname with a dot, no path, credentials, query or fragment)")
+		return c, errors.New("PUBLIC_URL must be like https://ops.example.com (a hostname with a dot, no path, credentials, query or fragment)")
 	}
 	pu.Path = ""
 	c.PublicURL = pu
@@ -138,10 +138,10 @@ func getenv(key, def string) string {
 	return def
 }
 
-// Runner configures `opsolete runner`. It needs no database: it talks to the server API only.
+// Runner configures `ops runner`. It needs no database: it talks to the server API only.
 type Runner struct {
 	ServerURL  *url.URL      // how the runner reaches OPS (in k8s: the internal service)
-	Token      string        // its own token (opsolete runner-token)
+	Token      string        // its own token (ops runner-token)
 	Name       string        // shown on deployments; defaults to the hostname (pod name)
 	Terraform  string        // terraform binary
 	JobTimeout time.Duration // limit per run phase; then Terraform is interrupted
@@ -164,11 +164,11 @@ func LoadRunner() (Runner, error) {
 	}
 	u, err := url.Parse(os.Getenv("OPS_SERVER_URL"))
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return c, errors.New("OPS_SERVER_URL must be like https://opsolete.example.com")
+		return c, errors.New("OPS_SERVER_URL must be like https://ops.example.com")
 	}
 	c.ServerURL = u
 	if c.Token == "" {
-		return c, errors.New("OPS_RUNNER_TOKEN is required: the runner's token (opsolete runner-token <name>)")
+		return c, errors.New("OPS_RUNNER_TOKEN is required: the runner's token (ops runner-token <name>)")
 	}
 	if c.Terraform == "" {
 		if c.Terraform, err = exec.LookPath("terraform"); err != nil {

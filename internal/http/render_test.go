@@ -10,11 +10,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // Every page template executes with its model's zero value and with a small filled one, for an
@@ -205,10 +205,10 @@ func TestRenderShowIf(t *testing.T) {
 
 func TestModuleName(t *testing.T) {
 	for src, want := range map[string]string{
-		"opsolete.localhost:8080/terraform-modules-examples/storage-account/azurerm":     "storage-account",
-		"git::https://github.com/Opsolete/terraform-modules-examples.git//resourcegroup": "resourcegroup",
-		"git::https://dev.azure.com/org/infra/_git/modules?ref=v1":                       "modules",
-		"git::https://github.com/org/repo.git":                                           "repo",
+		"ops.localhost:8080/terraform-modules-examples/storage-account/azurerm":           "storage-account",
+		"git::https://github.com/ops-plane/terraform-modules-examples.git//resourcegroup": "resourcegroup",
+		"git::https://dev.azure.com/org/infra/_git/modules?ref=v1":                        "modules",
+		"git::https://github.com/org/repo.git":                                            "repo",
 	} {
 		if got := moduleName(src); got != want {
 			t.Errorf("moduleName(%q) = %q, want %q", src, got, want)

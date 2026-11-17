@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // TestBlobEncryption: state store files are sealed with SECRET_KEY; a file without the sealed prefix is refused.

@@ -12,8 +12,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/storage/db"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/storage/db"
 )
 
 // ErrLeaseLost means the caller no longer holds the job: it expired, finished or was never claimed.
@@ -133,7 +133,7 @@ func (s *Store) AppendLog(ctx context.Context, runID uuid.UUID, lease, chunk str
 		switch {
 		case r.LogBytes <= maxBytes:
 		case before <= maxBytes:
-			chunk = "\n[opsolete: log truncated, limit reached]\n"
+			chunk = "\n[ops: log truncated, limit reached]\n"
 		default:
 			return nil
 		}

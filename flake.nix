@@ -40,12 +40,12 @@
     packages = forEachSystem (system: let
       pkgs = pkgsFor system;
       # nixpkgs' go, prebuilt on cache.nixos.org: keep flake.lock fresh so it has the stdlib security fixes.
-      opsolete = pkgs.buildGoModule {
-        pname = "opsolete";
+      ops = pkgs.buildGoModule {
+        pname = "ops";
         version = "0.11.1"; # x-release-please-version
         src = self;
         vendorHash = "sha256-esaXMMp88VvkqXZw4m1nwBDbcU6pluc3Fp7Rr71qy1g="; # update after go.mod changes
-        subPackages = ["cmd/opsolete"];
+        subPackages = ["cmd/ops"];
         # DB tests skip themselves without TEST_DATABASE_URL; the rest use catalog/ from src. The package
         # ships no templates: they come from a Git repository (Settings → Templates), or TEMPLATES_DIR.
       };
@@ -72,7 +72,7 @@
             };
         };
       } "tar -xzf $src && install -Dm755 infracost-linux-${arch} $out/bin/infracost";
-      labels."org.opencontainers.image.source" = "https://github.com/Opsolete/Opsolete"; # links the ghcr package to the repo
+      labels."org.opencontainers.image.source" = "https://github.com/ops-plane/ops"; # links the ghcr package to the repo
       rootfs = paths:
         pkgs.buildEnv {
           name = "rootfs";
@@ -80,16 +80,16 @@
           pathsToLink = ["/bin" "/etc"];
         };
     in
-      {default = opsolete;}
+      {default = ops;}
       // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
         # Web UI, registry, runner API.
         image-app = pkgs.dockerTools.buildImage {
-          name = "opsolete-app";
+          name = "ops-app";
           tag = "latest";
-          copyToRoot = rootfs [opsolete];
+          copyToRoot = rootfs [ops];
           extraCommands = "mkdir -m 1777 tmp";
           config = {
-            Entrypoint = ["/bin/opsolete"];
+            Entrypoint = ["/bin/ops"];
             User = "65532:65532";
             Env = ["ADDR=:8080" "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"];
             ExposedPorts."8080/tcp" = {};
@@ -100,10 +100,10 @@
         # One job at a time per container; scale with replicas. git: git:: module sources; sh and
         # coreutils: local-exec provisioners. State never stays here: it lives on the server's state store.
         image-runner = pkgs.dockerTools.buildImage {
-          name = "opsolete-runner";
+          name = "ops-runner";
           tag = "latest";
           copyToRoot = rootfs [
-            opsolete
+            ops
             terraform
             infracost
             pkgs.git
@@ -124,7 +124,7 @@
             printf '%s\n' 'root:x:0:' 'runner:x:10001:' > etc/group
           '';
           config = {
-            Entrypoint = ["/bin/opsolete" "runner"];
+            Entrypoint = ["/bin/ops" "runner"];
             User = "10001:10001";
             Env = [
               "PATH=/bin"
@@ -148,22 +148,22 @@
         shellHook = ''
           export PGHOST="$PWD/.devdata"
           export PGDATA="$PGHOST/pg"
-          export PGDATABASE=opsolete
+          export PGDATABASE=ops
           mkdir -p "$PGHOST"
-          export DATABASE_URL="postgres:///opsolete?host=$PGHOST"
-          export TEST_DATABASE_URL="postgres:///opsolete_test?host=$PGHOST"
+          export DATABASE_URL="postgres:///ops?host=$PGHOST"
+          export TEST_DATABASE_URL="postgres:///ops_test?host=$PGHOST"
           export TEMPLATE_EDITOR=1 # dev only; see internal/config
           export AUTH_DEV_USER=dev@localhost ADMIN_EMAILS=dev@localhost # dev only: no OIDC login locally
           export STATE_STORE="file://$PGHOST/state-store?create_dir=1&metadata=skip" # workspace state files
-          export PUBLIC_URL=http://opsolete.localhost:8080 # registry host needs a dot
+          export PUBLIC_URL=http://ops.localhost:8080 # registry host needs a dot
           export SECRET_KEY=dev-only-secret-key-not-for-production # encrypts VCS tokens; dev only
           export DEV_RUNNER_TOKEN=dev-only-runner-token-not-for-production # `just runner` registers it as runner "dev"; dev only
-          echo "opsolete: run 'just' to list tasks ('just run', 'just check')"
+          echo "ops: run 'just' to list tasks ('just run', 'just check')"
         '';
       };
     });
 
-    # services.opsolete and services.opsolete.runner; see nix/module.nix.
+    # services.ops and services.ops.runner; see nix/module.nix.
     nixosModules.default = import ./nix/module.nix self;
 
     # NixOS VM test of the module (needs a Linux builder with kvm).

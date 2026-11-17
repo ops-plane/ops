@@ -15,7 +15,7 @@ import (
 
 // URL creates an empty database for t on the server TEST_DATABASE_URL points at (a URL, its user
 // needs CREATEDB) and drops it when t ends. Without TEST_DATABASE_URL it skips t.
-// shortcut: a killed test run leaves its opsolete_t_* databases behind; drop them by hand (or `just db-reset`).
+// shortcut: a killed test run leaves its ops_t_* databases behind; drop them by hand (or `just db-reset`).
 func URL(t testing.TB) string {
 	t.Helper()
 	base := os.Getenv("TEST_DATABASE_URL")
@@ -26,7 +26,7 @@ func URL(t testing.TB) string {
 	if err != nil {
 		t.Fatalf("TEST_DATABASE_URL: %v", err)
 	}
-	name := "opsolete_t_" + strings.ToLower(rand.Text()[:16])
+	name := "ops_t_" + strings.ToLower(rand.Text()[:16])
 	if err := exec(base, "CREATE DATABASE "+name); err != nil {
 		t.Fatalf("create test database: %v", err)
 	}

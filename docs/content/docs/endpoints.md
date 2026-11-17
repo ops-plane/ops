@@ -177,9 +177,9 @@ Every route the server registers. A test (`TestEndpointsDocumented`) fails when 
 
 ## JSON API
 
-`/api/v1`: the UI's operations for scripts, other front ends and the Terraform provider, with the same access as the UI (the access column). A signed-in browser uses its session (a cross-site `POST` is refused); a script sends a token as `Authorization: Bearer <token>`: a `terraform login` token (acts as you) or a **service token** (Settings → API tokens, or `opsolete api-token <name>` on the server: admin rights, audited as `token:<name>`).
+`/api/v1`: the UI's operations for scripts, other front ends and the Terraform provider, with the same access as the UI (the access column). A signed-in browser uses its session (a cross-site `POST` is refused); a script sends a token as `Authorization: Bearer <token>`: a `terraform login` token (acts as you) or a **service token** (Settings → API tokens, or `ops api-token <name>` on the server: admin rights, audited as `token:<name>`).
 
-Objects are addressed by **id** (names change; Terraform keeps ids); lists filter by name with `?name=`. `PATCH` changes only the fields sent; a field that can't change (a variable's key, a set's name) is refused with `422`. Sensitive values (variables, VCS tokens) are write-only: `"value": null`. Errors are `{"error": "…", "fields": {field: message}}` with `401`, `403`, `404` (also for objects you may not see), `409` and `422`. The design: [docs/terraform-provider.md](https://github.com/Opsolete/Opsolete/blob/master/docs/terraform-provider.md).
+Objects are addressed by **id** (names change; Terraform keeps ids); lists filter by name with `?name=`. `PATCH` changes only the fields sent; a field that can't change (a variable's key, a set's name) is refused with `422`. Sensitive values (variables, VCS tokens) are write-only: `"value": null`. Errors are `{"error": "…", "fields": {field: message}}` with `401`, `403`, `404` (also for objects you may not see), `409` and `422`. The design: [docs/terraform-provider.md](https://github.com/ops-plane/ops/blob/master/docs/terraform-provider.md).
 
 | Endpoint | Access | Purpose |
 |---|---|---|

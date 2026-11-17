@@ -346,7 +346,7 @@ func truncate(s string, n int) string {
 // Cookies are base64(json) + "." + HMAC(name + json), so one cookie can't stand in for another.
 func (a *Auth) sign(name string, payload []byte) string {
 	m := hmac.New(sha256.New, a.key)
-	m.Write([]byte("opsolete cookie " + name + "\x00"))
+	m.Write([]byte("ops cookie " + name + "\x00"))
 	m.Write(payload)
 	return base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }

@@ -9,7 +9,7 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // TestEscapeValue: nested strings and object keys are escaped too, so list/object inputs can't inject.

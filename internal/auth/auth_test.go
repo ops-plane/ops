@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/auth/authtest"
+	"github.com/ops-plane/ops/internal/auth/authtest"
 )
 
 var (

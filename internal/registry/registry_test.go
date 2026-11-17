@@ -11,8 +11,8 @@ import (
 
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 var TarGz = registrytest.TarGz

@@ -11,8 +11,8 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 func TestEstimate(t *testing.T) {

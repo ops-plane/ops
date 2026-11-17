@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
 )
 
 // actor is who sent the request, for app operations.

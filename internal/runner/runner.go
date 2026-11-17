@@ -23,10 +23,10 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
-	"github.com/opsolete/opsolete/internal/secrets"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/secrets"
 )
 
 type Runner struct {
@@ -235,7 +235,7 @@ func (r *Runner) terraform(ctx context.Context, job runnerapi.Job, src string, w
 		}
 	}
 	backend := "terraform {\n  backend \"http\" {}\n}\n"
-	if err := os.WriteFile(filepath.Join(dir, "opsolete_backend.tf"), []byte(backend), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "ops_backend.tf"), []byte(backend), 0o600); err != nil {
 		return fail("write backend", err)
 	}
 	if job.Vars == nil {
@@ -340,12 +340,12 @@ func (r *Runner) rescueState(ctx context.Context, tf *tfProc, job runnerapi.Job,
 	// sealed with the runner token, which jobs can't read (unset, process not dumpable).
 	// shortcut: kept in the runner's temp dir, which an ephemeral container loses on restart; upload it
 	// to the server instead if that matters.
-	kept := filepath.Join(os.TempDir(), "opsolete-errored-"+job.RunID+".tfstate.sealed")
+	kept := filepath.Join(os.TempDir(), "ops-errored-"+job.RunID+".tfstate.sealed")
 	if err := sealFile(file, kept, r.Token); err != nil {
 		r.Log.Error("state the apply couldn't save is lost", "run", job.RunID, "err", err)
 		return "the state couldn't be saved and is lost: the resources this apply changed may be untracked"
 	}
-	push := fmt.Sprintf("OPS_RUNNER_TOKEN=… opsolete unseal-state %s | terraform state push -", kept)
+	push := fmt.Sprintf("OPS_RUNNER_TOKEN=… ops unseal-state %s | terraform state push -", kept)
 	r.Log.Error("state the apply couldn't save kept sealed on the runner", "run", job.RunID, "file", kept, "push", push)
 	msg := fmt.Sprintf("the state couldn't be saved; it is kept sealed on runner %s: push it with %s", r.Name, push)
 	fmt.Fprintf(w, "\n==> %s\n", msg)
@@ -353,7 +353,7 @@ func (r *Runner) rescueState(ctx context.Context, tf *tfProc, job runnerapi.Job,
 }
 
 // erroredStateAD binds a sealed errored state to its use: another sealed value doesn't open as one.
-const erroredStateAD = "opsolete errored state"
+const erroredStateAD = "ops errored state"
 
 // sealFile writes src sealed with the runner token to dst (src stays: it's in the workdir, deleted after the job).
 func sealFile(src, dst, token string) error {

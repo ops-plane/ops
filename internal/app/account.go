@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // A user's own account: the groups of their last login, and their user tokens (`terraform login`),
@@ -84,7 +84,7 @@ func (a *App) LoginCode(actor Actor, redirectURI, challenge string) string {
 // more than once within loginCodeTTL, but only with its PKCE verifier, which only that Terraform has.
 func (a *App) codeMAC(code string) string {
 	m := hmac.New(sha256.New, a.Registry.Key)
-	m.Write([]byte("opsolete oauth code\x00" + code))
+	m.Write([]byte("ops oauth code\x00" + code))
 	return base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }
 

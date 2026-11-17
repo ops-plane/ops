@@ -17,10 +17,10 @@ import (
 	"github.com/google/uuid"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 
-	"github.com/opsolete/opsolete/internal/app"
-	"github.com/opsolete/opsolete/internal/auth"
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/storage"
+	"github.com/ops-plane/ops/internal/app"
+	"github.com/ops-plane/ops/internal/auth"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/storage"
 )
 
 // Terraform's cloud block and `terraform login`: https://developer.hashicorp.com/terraform/cli/cloud/settings

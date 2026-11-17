@@ -12,9 +12,9 @@ import (
 	"github.com/google/uuid"
 	"gocloud.dev/blob/memblob"
 
-	"github.com/opsolete/opsolete/internal/secrets"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/vcs"
+	"github.com/ops-plane/ops/internal/secrets"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/vcs"
 )
 
 // Servers with both keys open values sealed with the old one; rotate-key re-seals variables, VCS
@@ -59,12 +59,12 @@ func TestRotateKey(t *testing.T) {
 	}
 
 	bucket := memblob.OpenBucket(nil)
-	(&App{Blobs: bucket, Secrets: oldKey}).WriteBlob(ctx, "opsolete/x/1.tfstate", []byte("state"))
+	(&App{Blobs: bucket, Secrets: oldKey}).WriteBlob(ctx, "ops/x/1.tfstate", []byte("state"))
 	rolled := &App{Blobs: bucket, Secrets: both} // restarted with SECRET_KEY=new, SECRET_KEY_PREVIOUS=old
-	if b, err := rolled.ReadBlob(ctx, "opsolete/x/1.tfstate"); err != nil || string(b) != "state" {
+	if b, err := rolled.ReadBlob(ctx, "ops/x/1.tfstate"); err != nil || string(b) != "state" {
 		t.Fatalf("old file with both keys: %q %v", b, err)
 	}
-	rolled.WriteBlob(ctx, "opsolete/x/2.tfstate", []byte("new")) // written after the restart: already under the new key
+	rolled.WriteBlob(ctx, "ops/x/2.tfstate", []byte("new")) // written after the restart: already under the new key
 	if got, err := both.Open(v.Value, VariableAD(v)); err != nil || got != "v1" {
 		t.Fatalf("old variable with both keys: %q %v", got, err)
 	}
@@ -90,7 +90,7 @@ func TestRotateKey(t *testing.T) {
 	if in, _, err := rotated.OpenInputs(uses[0].Inputs, ws.ID, "main"); err != nil || in["password"] != "pw" || in["plain"] != "x" {
 		t.Fatalf("inputs: %v %v", in, err)
 	}
-	for key, want := range map[string]string{"opsolete/x/1.tfstate": "state", "opsolete/x/2.tfstate": "new"} {
+	for key, want := range map[string]string{"ops/x/1.tfstate": "state", "ops/x/2.tfstate": "new"} {
 		if b, err := rotated.ReadBlob(ctx, key); err != nil || string(b) != want {
 			t.Fatalf("file %s: %q %v", key, b, err)
 		}

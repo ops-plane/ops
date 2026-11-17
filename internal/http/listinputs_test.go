@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // TestListInputForm: a list input renders its rows and a row template, the posted rows (<list>.<row>.<field>, in

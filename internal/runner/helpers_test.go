@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/config"
-	"github.com/opsolete/opsolete/internal/registry/registrytest"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/config"
+	"github.com/ops-plane/ops/internal/registry/registrytest"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // fakeServer records what a runner sends; conflictLogs makes it answer 409 (lease lost).

@@ -1,4 +1,4 @@
-module github.com/Opsolete/Opsolete/docs
+module github.com/ops-plane/ops/docs
 
 go 1.26
 

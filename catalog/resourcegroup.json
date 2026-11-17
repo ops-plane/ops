@@ -1,10 +1,10 @@
 {
-  "$schema": "https://opsolete.github.io/Opsolete/schema/template-1.json",
+  "$schema": "https://ops-plane.github.io/ops/schema/template-1.json",
   "id": "resourcegroup",
   "name": "Azure Resource Group",
   "description": "One resource group, from the terraform-modules-examples repo. Needs Azure credentials as ARM_* env variables (e.g. a variable set).",
   "module": {
-    "source": "git::https://github.com/Opsolete/terraform-modules-examples.git//resourcegroup",
+    "source": "git::https://github.com/ops-plane/terraform-modules-examples.git//resourcegroup",
     "ref": "v1.0.0"
   },
   "inputs": [

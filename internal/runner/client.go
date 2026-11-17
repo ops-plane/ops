@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 var errUnauthorized = errors.New("server rejected the runner token")

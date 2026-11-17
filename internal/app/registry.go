@@ -12,9 +12,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/opsolete/opsolete/internal/registry"
-	"github.com/opsolete/opsolete/internal/storage"
-	"github.com/opsolete/opsolete/internal/templates"
+	"github.com/ops-plane/ops/internal/registry"
+	"github.com/ops-plane/ops/internal/storage"
+	"github.com/ops-plane/ops/internal/templates"
 )
 
 // The module registry: every signed-in user reads it, Terraform reads it with a registry or user
@@ -52,7 +52,7 @@ const runTokenPrefix = "opsrun."
 // like the state password (StateToken).
 func (a *App) RegistryToken(runID uuid.UUID) string {
 	m := hmac.New(sha256.New, a.Registry.Key)
-	m.Write([]byte("opsolete registry\x00" + runID.String()))
+	m.Write([]byte("ops registry\x00" + runID.String()))
 	return runTokenPrefix + runID.String() + "." + base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }
 

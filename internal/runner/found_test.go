@@ -7,8 +7,8 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 
-	"github.com/opsolete/opsolete/internal/mask"
-	"github.com/opsolete/opsolete/internal/runnerapi"
+	"github.com/ops-plane/ops/internal/mask"
+	"github.com/ops-plane/ops/internal/runnerapi"
 )
 
 // foundPlan is a plan importing a VM (module.vm, the template), its NIC (module.vm.module.nic) and data disks
