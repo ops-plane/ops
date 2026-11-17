@@ -4,7 +4,7 @@ weight: 1
 ---
 
 <!-- x-release-please-start-version -->
-The release images are `ghcr.io/ops-plane/ops-app` and `ghcr.io/ops-plane/ops-runner` (linux/amd64), tagged with the version (e.g. `0.11.1`; `0.9` follows the latest patch), `latest` and the commit.
+The release images are `ghcr.io/ops-plane/ops-app` and `ghcr.io/ops-plane/ops-runner` (linux/amd64), tagged with the version (e.g. `0.12.0`; `0.9` follows the latest patch), `latest` and the commit.
 
 ## Try it on one machine
 
@@ -18,11 +18,11 @@ docker run -d --name ops-app --network ops -p 8080:8080 \
   -e SECRET_KEY=$(openssl rand -base64 32) \
   -e STATE_STORE='file:///tmp/state?create_dir=1&metadata=skip' \
   -e AUTH_DEV_USER=dev@localhost -e ADMIN_EMAILS=dev@localhost \
-  ghcr.io/ops-plane/ops-app:0.11.1
+  ghcr.io/ops-plane/ops-app:0.12.0
 export OPS_RUNNER_TOKEN=$(docker exec ops-app /bin/ops runner-token local)  # once the app is up
 docker run -d --name ops-runner --network ops \
   -e OPS_SERVER_URL=http://ops-app:8080 -e OPS_RUNNER_TOKEN \
-  ghcr.io/ops-plane/ops-runner:0.11.1
+  ghcr.io/ops-plane/ops-runner:0.12.0
 ```
 <!-- x-release-please-end -->
 
