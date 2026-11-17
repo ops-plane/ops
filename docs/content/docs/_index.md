@@ -2,7 +2,7 @@
 title: OPS Docs
 ---
 
-OPS, the On-demand Provision Service, is a self-hosted way to deploy your existing Terraform modules: pick a template, fill in a form, review the plan, apply. See [About OPS]({{< relref "/docs/about" >}}) for how it fits together.
+The On-demand Provisioning Service (OPS) is a self-hosted way to deploy your existing Terraform modules: pick a template, fill in a form, review the plan, apply. See [About OPS]({{< relref "/docs/about" >}}) for how it fits together.
 
 ## Get started
 

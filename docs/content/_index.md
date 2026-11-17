@@ -4,7 +4,7 @@ layout: hextra-home
 ---
 
 {{< hextra/hero-headline >}}
-On-demand Provision Service
+On-demand Provisioning Service (OPS)
 {{< /hextra/hero-headline >}}
 
 <div class="hx:mb-6">

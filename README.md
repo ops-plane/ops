@@ -1,6 +1,6 @@
 # OPS
 
-**On-demand Provision Service**
+**On-demand Provisioning Service (OPS)**
 
 _Formerly Opsolete (github.com/Opsolete/Opsolete)._
 
