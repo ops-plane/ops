@@ -4,12 +4,12 @@ layout: hextra-home
 ---
 
 {{< hextra/hero-headline >}}
-Pick. Plan. Apply.
+On-demand Provision Service
 {{< /hextra/hero-headline >}}
 
 <div class="hx:mb-6">
 {{< hextra/hero-subtitle >}}
-A self-hosted, no-code way to deploy your existing Terraform modules:&nbsp;<br class="hx:sm:block hx:hidden" />pick a template, fill in a form, review the plan, apply.
+Self-hosted, no-code provisioning with your existing Terraform modules:&nbsp;<br class="hx:sm:block hx:hidden" />pick a template, fill in a form, review the plan, apply.
 {{< /hextra/hero-subtitle >}}
 </div>
 

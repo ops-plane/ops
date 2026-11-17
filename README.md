@@ -1,10 +1,10 @@
 # OPS
 
-**Pick. Plan. Apply.**
+**On-demand Provision Service**
 
 _Formerly Opsolete (github.com/Opsolete/Opsolete)._
 
-Most teams have a few people who write good Terraform and a lot of people who just need a storage account, a resource group or a VM by Friday. OPS sits between them. The people who know Terraform turn their modules into templates. Everyone else picks a template, fills in a short form, reviews the plan and applies it.
+Most teams have a few people who write good Terraform and a lot of people who just need a storage account, a resource group or a VM by Friday. OPS sits between them. The people who know Terraform turn their modules into templates. Everyone else picks a template, fills in a short form, reviews the plan and applies it: infrastructure on demand, provisioned by modules the experts approved.
 
 It's self-hosted, it runs your existing modules as they are, and it doesn't hide what Terraform is doing: every change is a run you can follow line by line in the browser.
 
@@ -34,7 +34,7 @@ Working on OPS itself? `just check` runs the tests and a smoke test, and `just d
 
 ## Where it's at
 
-OPS is at <!-- x-release-please-start-version -->0.9.0<!-- x-release-please-end --> and heading for 1.0. Version 0.6 was a rebuild and needs a fresh install: see [Upgrading](https://ops-plane.github.io/ops/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
+OPS is at 0.12.0<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading](https://ops-plane.github.io/ops/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Documentation
 

@@ -3,9 +3,9 @@ title: About OPS
 weight: 1
 ---
 
-OPS takes you from forms to infrastructure. Automatically.
+OPS is the **On-demand Provision Service**: infrastructure when someone needs it, provisioned with the Terraform modules your platform team already approved, without everyone having to write Terraform.
 
-Pick a template, name a **workspace** and fill in a form generated from JSON. A **OPS runner** plans the pinned Terraform module, you review the plan and confirm it, and a runner applies exactly that plan. You watch the output live in the browser, and the Terraform outputs show up when it's done.
+Pick a template, name a **workspace** and fill in a form generated from JSON. An **OPS runner** plans the pinned Terraform module, you review the plan and confirm it, and a runner applies exactly that plan. You watch the output live in the browser, and the Terraform outputs show up when it's done.
 
 ## How it fits together
 
@@ -19,4 +19,4 @@ OPS is one Go binary (server and runner modes) that needs PostgreSQL and, for st
 
 ## Where it's at
 
-OPS is at <!-- x-release-please-start-version -->0.9.0<!-- x-release-please-end --> and heading for 1.0. Version 0.6 was a rebuild and needs a fresh install: see [Upgrading]({{< relref "/docs/install/upgrading" >}}). What's planned is on the [roadmap]({{< relref "/docs/roadmap" >}}), and what changed in each release in the [release notes]({{< relref "/docs/install/release-notes" >}}).
+OPS is at 0.12.0<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading]({{< relref "/docs/install/upgrading" >}}). What's planned is on the [roadmap]({{< relref "/docs/roadmap" >}}), and what changed in each release in the [release notes]({{< relref "/docs/install/release-notes" >}}).
