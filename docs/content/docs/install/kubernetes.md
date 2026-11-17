@@ -15,8 +15,7 @@ kubectl create secret generic ops \
 
 Then a values file:
 
-```yaml
-# my-values.yaml
+```yaml {filename="my-values.yaml"}
 config:
   PUBLIC_URL: https://ops.example.com
   STATE_STORE: azblob://tfstate
@@ -32,7 +31,8 @@ ingress:
 
 ```sh
 helm repo add ops https://ops-plane.github.io/Helm-charts
-helm install ops ops-plane/ops -f my-values.yaml
+helm install ops ops/ops -f my-values.yaml
+
 # or, as an OCI artifact:
 helm install ops oci://ghcr.io/ops-plane/charts/ops -f my-values.yaml
 ```

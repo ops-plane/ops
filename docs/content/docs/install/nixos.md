@@ -5,8 +5,7 @@ weight: 3
 
 Add this repository as a flake input and import its module. It creates a local PostgreSQL database by default, and passes secrets in from files (here from [sops-nix](https://github.com/Mic92/sops-nix)), so they never reach the Nix store:
 
-```nix
-# flake.nix
+```nix {filename="flake.nix"}
 {
   inputs.ops.url = "github:ops-plane/ops";
   outputs = { nixpkgs, ops, ... }: {
@@ -18,17 +17,22 @@ Add this repository as a flake input and import its module. It creates a local P
 }
 ```
 
-```nix
-# configuration.nix
+```nix {filename="configuration.nix"}
 services.ops = {
   enable = true;
   publicUrl = "https://ops.example.com";
   secretKeyFile = config.sops.secrets.ops-secret-key.path;
   runnerTokenFile = config.sops.secrets.ops-runner-token.path;
   stateStore = "azblob://tfstate"; # default: files under /var/lib/ops
-  oidc = { issuer = "https://login.example.com"; clientId = "ops"; clientSecretFile = config.sops.secrets.ops-oidc.path; };
+  oidc = {
+    issuer = "https://login.example.com";
+    clientId = "ops";
+    clientSecretFile = config.sops.secrets.ops-oidc.path;
+  };
   adminEmails = [ "you@example.com" ];
-  runner.enable = true; # a runner on the same host; terraform is unfree (allowUnfree), or set runner.terraformPackage = pkgs.opentofu
+  # a runner on the same host; terraform is unfree (allowUnfree),
+  # or set runner.terraformPackage = pkgs.opentofu
+  runner.enable = true;
 };
 ```
 

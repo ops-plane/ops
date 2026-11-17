@@ -17,7 +17,8 @@ OPS is a private Terraform module registry, built on the standard [module regist
 ## Use from Terraform
 
 ```sh
-just token my-laptop     # or `ops token <name>`; printed once
+# or `ops token <name>`; the token is printed once
+just token my-laptop
 export TF_TOKEN_ops_example_com=<token>
 ```
 

@@ -10,19 +10,19 @@ Run OPS from a checkout of the repository, to try it or to work on it.
 ## Run locally with Nix (recommended)
 
 ```sh
-nix develop        # or `direnv allow`; gives go, gopls, sqlc, postgres 17, terraform, infracost, just, hugo
-just               # list tasks
-just run           # start project-local postgres (.devdata/, unix socket) + app on :8080
-just runner        # in a 2nd terminal: a runner on this machine (state goes to .devdata/state-store)
-just reseed        # wipe the dev DB + state files (stops postgres, so not while `just run` runs), then `just seed`
-just test          # sqlc diff, gofmt check, vet, all tests incl. DB tests
-just test-linux    # the non-DB tests on Linux in docker (go.mod's Go, CI's Terraform)
-just smoke         # nix build, boot the binary, create a workspace from a template and list it (no runner)
-just check         # test + smoke, run before committing
-just token <name>  # registry token for Terraform clients
-just image app|runner   # container images, built with nix (also ghcr.io/ops-plane/ops-app|runner)
-just docs          # preview this documentation on http://localhost:1313/ops/
-just sqlc          # regenerate internal/storage/db after changing internal/storage/queries
+nix develop           # or `direnv allow`; gives go, gopls, sqlc, postgres 17, terraform, infracost, just, hugo
+just                  # list tasks
+just run              # start project-local postgres (.devdata/, unix socket) + app on :8080
+just runner           # in a 2nd terminal: a runner on this machine (state goes to .devdata/state-store)
+just reseed           # wipe the dev DB + state files (stops postgres, so not while `just run` runs), then `just seed`
+just test             # sqlc diff, gofmt check, vet, all tests incl. DB tests
+just test-linux       # the non-DB tests on Linux in docker (go.mod's Go, CI's Terraform)
+just smoke            # nix build, boot the binary, create a workspace from a template and list it (no runner)
+just check            # test + smoke, run before committing
+just token <name>     # registry token for Terraform clients
+just image app|runner # container images, built with nix (also ghcr.io/ops-plane/ops-app|runner)
+just docs             # preview this documentation on http://localhost:1313/ops/
+just sqlc             # regenerate internal/storage/db after changing internal/storage/queries
 just psql | db-start | db-stop | db-reset | down
 ```
 
@@ -33,10 +33,13 @@ just psql | db-start | db-stop | db-reset | down
 Requirements: Go 1.26+, PostgreSQL 13+ (it needs `gen_random_uuid()`; CI tests 17), Terraform for a runner.
 
 ```sh
-docker compose up -d            # compose.yaml: PostgreSQL 17 on 127.0.0.1:5432; or use any local PostgreSQL
+# compose.yaml: PostgreSQL 17 on 127.0.0.1:5432; or use any local PostgreSQL
+docker compose up -d
 export DATABASE_URL=postgres://ops:ops@localhost:5432/ops
-export AUTH_DEV_USER=dev@localhost ADMIN_EMAILS=dev@localhost   # local only, see Login
-export SECRET_KEY=$(openssl rand -hex 32) STATE_STORE="file://$PWD/.devdata/state-store?create_dir=1&metadata=skip"
+# local only, see Login
+export AUTH_DEV_USER=dev@localhost ADMIN_EMAILS=dev@localhost
+export SECRET_KEY=$(openssl rand -hex 32)
+export STATE_STORE="file://$PWD/.devdata/state-store?create_dir=1&metadata=skip"
 go run ./cmd/ops
 ```
 

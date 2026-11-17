@@ -12,14 +12,17 @@ With a throwaway database and state, and no login:
 
 ```sh
 docker network create ops
-docker run -d --name ops-db --network ops -e POSTGRES_USER=ops -e POSTGRES_PASSWORD=ops postgres:17
+docker run -d --name ops-db --network ops \
+  -e POSTGRES_USER=ops -e POSTGRES_PASSWORD=ops \
+  postgres:17
 docker run -d --name ops-app --network ops -p 8080:8080 \
   -e DATABASE_URL='postgres://ops:ops@ops-db:5432/ops?sslmode=disable' \
   -e SECRET_KEY=$(openssl rand -base64 32) \
   -e STATE_STORE='file:///tmp/state?create_dir=1&metadata=skip' \
   -e AUTH_DEV_USER=dev@localhost -e ADMIN_EMAILS=dev@localhost \
   ghcr.io/ops-plane/ops-app:0.12.0
-export OPS_RUNNER_TOKEN=$(docker exec ops-app /bin/ops runner-token local)  # once the app is up
+# once the app is up
+export OPS_RUNNER_TOKEN=$(docker exec ops-app /bin/ops runner-token local)
 docker run -d --name ops-runner --network ops \
   -e OPS_SERVER_URL=http://ops-app:8080 -e OPS_RUNNER_TOKEN \
   ghcr.io/ops-plane/ops-runner:0.12.0
@@ -43,11 +46,21 @@ Use the release images, or build them yourself with `just image app` and `just i
 
 ```sh
 just image app && just image runner
-docker run -e DATABASE_URL=… -e PUBLIC_URL=https://ops.example.com -e OIDC_ISSUER=… -e OIDC_CLIENT_ID=… \
-  -e OIDC_CLIENT_SECRET=… -e ADMIN_EMAILS=you@example.com -e STATE_STORE=azblob://tfstate -e AZURE_STORAGE_ACCOUNT=… \
-  -p 8080:8080 ops-app
-# a runner's token: Settings → Runners, or ops runner-token <name> with the app's settings; keep it with your other secrets
-docker run -e OPS_SERVER_URL=http://ops:8080 -e OPS_RUNNER_TOKEN=… ops-runner
+
+docker run -p 8080:8080 \
+  -e DATABASE_URL=… \
+  -e PUBLIC_URL=https://ops.example.com \
+  -e OIDC_ISSUER=… -e OIDC_CLIENT_ID=… -e OIDC_CLIENT_SECRET=… \
+  -e ADMIN_EMAILS=you@example.com \
+  -e STATE_STORE=azblob://tfstate -e AZURE_STORAGE_ACCOUNT=… \
+  ops-app
+
+# a runner's token: Settings → Runners, or `ops runner-token <name>` with the
+# app's settings; keep it with your other secrets
+docker run \
+  -e OPS_SERVER_URL=http://ops:8080 \
+  -e OPS_RUNNER_TOKEN=… \
+  ops-runner
 ```
 
 ## Next
