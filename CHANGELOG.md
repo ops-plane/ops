@@ -7,7 +7,7 @@
 
 * the binary, images, Nix module (services.ops), default database and metric names change; the template $schema URL moves to ops-plane.github.io/ops.
 * **storage:** a database migrated by 0.11 or earlier is refused ("needs a new, empty database"): start with a new database and state store.
-* runners send X-OPS-Lease: upgrade the server and its runners together. URLs (GitHub org, docs site, template schema) and the binary name are unchanged.
+* runners send X-OPS-Lease: upgrade the server and its runners together.
 
 ### Features
 
