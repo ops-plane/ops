@@ -14,11 +14,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update:
+  compute:
     # Branch, not PR author: also runs after "Update branch"/rebase by a human, when go.sum changes again.
     if: startsWith(github.head_ref, 'dependabot/') && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      hash: ${{ steps.hash.outputs.hash }}
+      sha: ${{ steps.hash.outputs.sha }}
+    steps:
+      # Runs the branch's justfile and flake, so no credentials here; the push job runs none of its code.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
+      - name: recompute vendorHash
+        id: hash
+        run: |
+          nix run --inputs-from . nixpkgs#just -- vendorhash # same recipe `just build` runs locally
+          if git diff --quiet flake.nix; then echo "vendorHash is current (other build errors are ci.yml's nix job's to report)"; exit 0; fi
+          nix build .#default.goModules --no-link # fail loudly if the new hash still doesn't match
+          echo "hash=$(sed -n 's/.*vendorHash = "\([^"]*\)".*/\1/p' flake.nix)" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  push:
+    needs: compute
+    if: needs.compute.outputs.hash != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       # A PAT, not GITHUB_TOKEN: pushes made with GITHUB_TOKEN don't trigger ci.yml on the new commit.
       # DEPENDABOT_PUSH_TOKEN (fine-grained PAT, contents: write, this repo) must exist as BOTH a Dependabot
@@ -28,12 +52,15 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.DEPENDABOT_PUSH_TOKEN }}
           persist-credentials: true # zizmor: ignore[artipacked] the job pushes the fixed flake.nix; no artifacts are uploaded
-      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
-      - name: recompute vendorHash
+      - name: commit vendorHash
+        # Only sed and git: nothing from the branch runs here. The hash is checked, since branch code produced it.
+        env:
+          HASH: ${{ needs.compute.outputs.hash }}
+          SHA: ${{ needs.compute.outputs.sha }}
         run: |
-          nix run --inputs-from . nixpkgs#just -- vendorhash # same recipe `just build` runs locally
-          if git diff --quiet flake.nix; then echo "vendorHash is current (other build errors are ci.yml's nix job's to report)"; exit 0; fi
-          nix build .#default.goModules --no-link # fail loudly if the new hash still doesn't match
+          [[ $HASH =~ ^sha256-[A-Za-z0-9+/]{43}=$ ]] || { echo "unexpected vendorHash: $HASH" >&2; exit 1; }
+          if [ "$(git rev-parse HEAD)" != "$SHA" ]; then echo "branch moved since the hash was computed; its own run updates it"; exit 0; fi
+          sed -i "s|vendorHash = \"[^\"]*\"|vendorHash = \"$HASH\"|" flake.nix
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "fix(flake): update vendorHash"
