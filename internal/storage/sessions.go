@@ -63,7 +63,10 @@ func (s *Store) UserSessions(ctx context.Context, userID uuid.UUID) ([]UserSessi
 	return out, err
 }
 
-// PruneSessions deletes expired sessions.
+// PruneSessions deletes expired sessions and returns how many, and the used login codes that expired (UseLoginCode).
 func (s *Store) PruneSessions(ctx context.Context) (int64, error) {
+	if err := s.q.PruneLoginCodes(ctx); err != nil {
+		return 0, err
+	}
 	return s.q.PruneSessions(ctx)
 }

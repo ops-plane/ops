@@ -59,6 +59,9 @@ func TestCloudLoginAndState(t *testing.T) {
 	if json.Unmarshal(rec.Body.Bytes(), &tok); rec.Code != 200 || tok.AccessToken == "" {
 		t.Fatalf("token: %d %s", rec.Code, rec.Body)
 	}
+	if rec := post(h, "/oauth/token", exchange); rec.Code != http.StatusBadRequest {
+		t.Fatalf("code redeemed twice: %d", rec.Code)
+	}
 
 	api := func(method, path, body string) *httptest.ResponseRecorder {
 		req := httptest.NewRequest(method, cloudPrefix+path, strings.NewReader(body))

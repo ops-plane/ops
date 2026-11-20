@@ -64,6 +64,15 @@ func (q *Queries) DeleteUserSessions(ctx context.Context, userID uuid.UUID) (int
 	return result.RowsAffected(), nil
 }
 
+const pruneLoginCodes = `-- name: PruneLoginCodes :exec
+DELETE FROM used_login_codes WHERE expires_at <= now()
+`
+
+func (q *Queries) PruneLoginCodes(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, pruneLoginCodes)
+	return err
+}
+
 const pruneSessions = `-- name: PruneSessions :execrows
 DELETE FROM sessions WHERE expires_at <= now()
 `

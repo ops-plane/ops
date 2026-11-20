@@ -410,6 +410,25 @@ func (q *Queries) TokenUser(ctx context.Context, tokenHash []byte) (TokenUserRow
 	return i, err
 }
 
+const useLoginCode = `-- name: UseLoginCode :execrows
+INSERT INTO used_login_codes (code_hash, expires_at) VALUES ($1::bytea, $2::timestamptz)
+ON CONFLICT DO NOTHING
+`
+
+type UseLoginCodeParams struct {
+	CodeHash  []byte
+	ExpiresAt time.Time
+}
+
+// 0 rows: the code was redeemed before
+func (q *Queries) UseLoginCode(ctx context.Context, arg UseLoginCodeParams) (int64, error) {
+	result, err := q.db.Exec(ctx, useLoginCode, arg.CodeHash, arg.ExpiresAt)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const userTokens = `-- name: UserTokens :many
 SELECT id, name, created_at, expires_at::timestamptz AS expires_at FROM api_tokens
 WHERE scope = 'user' AND user_id = $1::uuid AND expires_at > now() ORDER BY created_at DESC

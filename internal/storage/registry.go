@@ -179,6 +179,12 @@ func (s *Store) CreateUserToken(ctx context.Context, userID uuid.UUID, name stri
 	return token, s.q.CreateUserToken(ctx, db.CreateUserTokenParams{Name: name, TokenHash: h, UserID: userID, TtlSecs: float64(int64(ttl.Seconds()))})
 }
 
+// UseLoginCode records a redeemed authorization code until it expires; false if it was redeemed before.
+func (s *Store) UseLoginCode(ctx context.Context, code string, expires time.Time) (bool, error) {
+	n, err := s.q.UseLoginCode(ctx, db.UseLoginCodeParams{CodeHash: tokenHash(code), ExpiresAt: expires})
+	return n == 1, err
+}
+
 // TokenUser returns the id and email of an unexpired user token's user; ErrNotFound if
 // the token is unknown, expired or not a user token.
 // role and groups are what the user's last login recorded.

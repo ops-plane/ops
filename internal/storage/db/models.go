@@ -278,6 +278,11 @@ type TemplateRollout struct {
 	TickedAt     *time.Time
 }
 
+type UsedLoginCode struct {
+	CodeHash  []byte
+	ExpiresAt time.Time
+}
+
 type User struct {
 	ID        uuid.UUID
 	Subject   *string
