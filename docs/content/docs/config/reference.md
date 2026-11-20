@@ -28,7 +28,8 @@ The server and the runner are configured with environment variables; an invalid 
 | `TEMPLATE_EDITOR` | off | Development: `1` lets the template builder write into `TEMPLATES_DIR` (which must be writable, or startup fails) and turns on module uploads (on in the nix dev shell). A Git template catalog doesn't use it: its editor is set up in **Settings → Template catalog**, module uploads in **Settings → General** | `templateEditor` |
 | `STALE_LOCK_TIMEOUT` | `15m` | A rollback's state lock older than this is released as orphaned (the server died mid-rollback). Run locks are released with the run or its lease; CLI and UI locks never expire (unlock or force-unlock them) | `staleLockTimeout` |
 | `RUN_LOG_RETENTION_DAYS` | `90` | Run logs are deleted this many days after the run ended (whole days, up to 36500); `0` keeps them forever. The run itself, its status history and plan summary stay; see [Retention]({{< relref "/docs/features/runs#retention" >}}) | `runLogRetentionDays` |
-| `AUTH_DEV_USER` | | **Local dev only:** skip login and treat every visitor as this email (set in the nix dev shell) | `devUser` |
+| `AUTH_DEV_USER` | | **Local dev only:** skip login and treat every visitor as this email (set in the nix dev shell). The server refuses to start with it unless `PUBLIC_URL`'s host is `localhost`, `*.localhost` or a loopback IP | `devUser` |
+| `AUTH_DEV_USER_ALLOW_REMOTE` | `false` | `true` allows `AUTH_DEV_USER` with any `PUBLIC_URL`: everyone who reaches the server is logged in. Only for test environments nobody else can reach | `environment` |
 | `AUTH_DEV_GROUPS` | | **Local dev only:** comma-separated groups for the dev user, e.g. `grp-a,grp-b` | `devGroups` |
 
 ## Runner

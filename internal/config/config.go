@@ -4,6 +4,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/url"
 	"os"
 	"os/exec"
@@ -111,6 +112,17 @@ func Load() (Config, error) {
 	}
 	pu.Path = ""
 	c.PublicURL = pu
+	if c.AuthDevUser != "" {
+		h := pu.Hostname()
+		ip := net.ParseIP(h)
+		remote, err := strconv.ParseBool(getenv("AUTH_DEV_USER_ALLOW_REMOTE", "false"))
+		if err != nil {
+			return c, errors.New("AUTH_DEV_USER_ALLOW_REMOTE must be true or false")
+		}
+		if h != "localhost" && !strings.HasSuffix(h, ".localhost") && (ip == nil || !ip.IsLoopback()) && !remote {
+			return c, errors.New("AUTH_DEV_USER logs every visitor in without a password: it needs a localhost PUBLIC_URL (e.g. http://ops.localhost:8080), or AUTH_DEV_USER_ALLOW_REMOTE=true")
+		}
+	}
 	if c.TemplateEditor { // fail at startup, not at the first save
 		f, err := os.CreateTemp(c.TemplatesDir, ".write-check-*")
 		if err != nil {

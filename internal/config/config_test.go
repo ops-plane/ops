@@ -8,7 +8,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	for _, k := range []string{"ADDR", "PUBLIC_URL", "DEPLOYMENTS_ENABLED", "REGISTRY_ENABLED", "TEMPLATE_EDITOR", "RUN_LOG_RETENTION_DAYS"} {
+	for _, k := range []string{"ADDR", "PUBLIC_URL", "DEPLOYMENTS_ENABLED", "REGISTRY_ENABLED", "TEMPLATE_EDITOR", "RUN_LOG_RETENTION_DAYS", "AUTH_DEV_USER", "AUTH_DEV_USER_ALLOW_REMOTE"} {
 		t.Setenv(k, "")
 	}
 	t.Setenv("DATABASE_URL", "")
@@ -58,6 +58,21 @@ func TestLoad(t *testing.T) {
 			t.Errorf("PUBLIC_URL %q should be rejected", bad)
 		}
 	}
+	t.Setenv("PUBLIC_URL", "")
+
+	t.Setenv("AUTH_DEV_USER", "dev@localhost")
+	for u, ok := range map[string]bool{"": true, "http://ops.localhost:8080": true, "http://127.0.0.1:8080": true, "https://ops.example.com": false, "http://localhost.example.com": false} {
+		t.Setenv("PUBLIC_URL", u)
+		if _, err := Load(); (err == nil) != ok {
+			t.Errorf("AUTH_DEV_USER with PUBLIC_URL %q: err = %v", u, err)
+		}
+	}
+	t.Setenv("AUTH_DEV_USER_ALLOW_REMOTE", "true")
+	if _, err := Load(); err != nil {
+		t.Errorf("AUTH_DEV_USER_ALLOW_REMOTE=true: %v", err)
+	}
+	t.Setenv("AUTH_DEV_USER_ALLOW_REMOTE", "")
+	t.Setenv("AUTH_DEV_USER", "")
 	t.Setenv("PUBLIC_URL", "")
 
 	if c.RunLogRetentionDays != 90 {
