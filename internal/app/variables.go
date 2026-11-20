@@ -172,6 +172,8 @@ func (a *App) sealVariable(o storage.VarOwner, in VariableInput) (storage.Variab
 		return storage.Variable{}, invalid("key", "a Terraform variable name is letters, digits, _ and -, starting with a letter or _")
 	case len(val) > maxVariableValue:
 		return storage.Variable{}, invalid("value", fmt.Sprintf("values are limited to %d KB", maxVariableValue>>10))
+	case in.Sensitive && len(strings.TrimSpace(val)) < mask.MinLen:
+		return storage.Variable{}, invalid("value", fmt.Sprintf("a sensitive value must be at least %d characters, or it can't be hidden in logs", mask.MinLen))
 	case in.HCL && cat != "terraform":
 		return storage.Variable{}, invalid("hcl", "only Terraform variables are HCL; environment variables are strings")
 	}
