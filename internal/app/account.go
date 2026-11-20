@@ -80,8 +80,7 @@ func (a *App) LoginCode(actor Actor, redirectURI, challenge string) string {
 	return code + "." + a.codeMAC(code)
 }
 
-// codeMAC signs an authorization code. shortcut: codes are stateless, so one can be exchanged
-// more than once within loginCodeTTL, but only with its PKCE verifier, which only that Terraform has.
+// codeMAC signs an authorization code.
 func (a *App) codeMAC(code string) string {
 	m := hmac.New(sha256.New, a.Registry.Key)
 	m.Write([]byte("ops oauth code\x00" + code))
@@ -89,8 +88,8 @@ func (a *App) codeMAC(code string) string {
 }
 
 // RedeemLoginCode exchanges an authorization code, its PKCE verifier and the redirect URI it was
-// issued for, for a new user token of the user who confirmed it. ErrForbidden ("invalid_grant"):
-// a forged, expired or mismatched code.
+// issued for, for a new user token of the user who confirmed it, once. ErrForbidden ("invalid_grant"):
+// a forged, expired, mismatched or already redeemed code.
 func (a *App) RedeemLoginCode(ctx context.Context, code, verifier, redirectURI string) (string, error) {
 	payload, mac, _ := strings.Cut(code, ".")
 	var c loginCode
@@ -99,6 +98,11 @@ func (a *App) RedeemLoginCode(ctx context.Context, code, verifier, redirectURI s
 	if !hmac.Equal([]byte(mac), []byte(a.codeMAC(payload))) || err != nil || json.Unmarshal(raw, &c) != nil ||
 		time.Now().Unix() > c.Expires || redirectURI != c.RedirectURI ||
 		base64.RawURLEncoding.EncodeToString(sum[:]) != c.Challenge {
+		return "", errInvalidGrant
+	}
+	if fresh, err := a.Store.UseLoginCode(ctx, code, time.Unix(c.Expires, 0)); err != nil {
+		return "", err
+	} else if !fresh {
 		return "", errInvalidGrant
 	}
 	token, err := a.Store.CreateUserToken(ctx, c.User, "terraform login", UserTokenTTL)

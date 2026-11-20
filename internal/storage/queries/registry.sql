@@ -39,6 +39,11 @@ SELECT EXISTS (SELECT 1 FROM api_tokens WHERE token_hash = sqlc.arg(token_hash):
 INSERT INTO api_tokens (name, token_hash, scope, user_id, expires_at)
 VALUES (sqlc.arg(name)::text, sqlc.arg(token_hash)::bytea, 'user', sqlc.arg(user_id)::uuid, now() + make_interval(secs => sqlc.arg(ttl_secs)::float8));
 
+-- name: UseLoginCode :execrows
+-- 0 rows: the code was redeemed before
+INSERT INTO used_login_codes (code_hash, expires_at) VALUES (sqlc.arg(code_hash)::bytea, sqlc.arg(expires_at)::timestamptz)
+ON CONFLICT DO NOTHING;
+
 -- name: TokenUser :one
 SELECT u.id, u.email, u.role, u.groups FROM api_tokens t JOIN users u ON u.id = t.user_id
 WHERE t.token_hash = sqlc.arg(token_hash)::bytea AND t.scope = 'user' AND t.expires_at > now();

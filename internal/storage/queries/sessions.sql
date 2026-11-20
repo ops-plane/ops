@@ -28,3 +28,6 @@ ORDER BY last_seen_at DESC;
 
 -- name: PruneSessions :execrows
 DELETE FROM sessions WHERE expires_at <= now();
+
+-- name: PruneLoginCodes :exec
+DELETE FROM used_login_codes WHERE expires_at <= now();
