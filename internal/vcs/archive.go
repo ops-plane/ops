@@ -59,6 +59,8 @@ func (c Conn) download(ctx context.Context, repo, ref, refType string) ([]file, 
 	return p.download(ctx, c, a, b, ref, refType)
 }
 
+var errTooManyEntries = fmt.Errorf("repo archive has more than %d entries", maxEntries)
+
 type file struct {
 	name string
 	body []byte
@@ -72,13 +74,16 @@ func readTarGz(raw []byte) ([]file, error) {
 	tr := tar.NewReader(gz)
 	var files []file
 	var total int64
-	for {
+	for entries := 0; ; entries++ {
 		h, err := tr.Next()
 		if err == io.EOF {
 			return files, nil
 		}
 		if err != nil {
 			return nil, fmt.Errorf("repo archive: %w", err)
+		}
+		if entries >= maxEntries {
+			return nil, errTooManyEntries
 		}
 		if h.Typeflag != tar.TypeReg {
 			continue // dirs are implied; symlinks and GitHub's pax comment header are dropped
@@ -95,6 +100,9 @@ func readZip(raw []byte) ([]file, error) {
 	zr, err := zip.NewReader(bytes.NewReader(raw), int64(len(raw)))
 	if err != nil {
 		return nil, fmt.Errorf("repo archive: %w", err)
+	}
+	if len(zr.File) > maxEntries {
+		return nil, errTooManyEntries
 	}
 	var files []file
 	var total int64
