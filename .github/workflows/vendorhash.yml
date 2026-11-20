@@ -44,24 +44,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      # A PAT, not GITHUB_TOKEN: pushes made with GITHUB_TOKEN don't trigger ci.yml on the new commit.
+      # No checkout: the token never shares a job with branch files; flake.nix is edited through the contents API.
+      # A PAT, not GITHUB_TOKEN: commits made with GITHUB_TOKEN don't trigger ci.yml.
       # DEPENDABOT_PUSH_TOKEN (fine-grained PAT, contents: write, this repo) must exist as BOTH a Dependabot
       # secret (runs triggered by Dependabot) and an Actions secret (runs triggered by a human updating the branch).
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.DEPENDABOT_PUSH_TOKEN }}
-          persist-credentials: true # zizmor: ignore[artipacked] the job pushes the fixed flake.nix; no artifacts are uploaded
       - name: commit vendorHash
-        # Only sed and git: nothing from the branch runs here. The hash is checked, since branch code produced it.
+        # The hash is checked, since branch code produced it.
         env:
+          GH_TOKEN: ${{ secrets.DEPENDABOT_PUSH_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.head_ref }}
           HASH: ${{ needs.compute.outputs.hash }}
           SHA: ${{ needs.compute.outputs.sha }}
         run: |
           [[ $HASH =~ ^sha256-[A-Za-z0-9+/]{43}=$ ]] || { echo "unexpected vendorHash: $HASH" >&2; exit 1; }
-          if [ "$(git rev-parse HEAD)" != "$SHA" ]; then echo "branch moved since the hash was computed; its own run updates it"; exit 0; fi
-          sed -i "s|vendorHash = \"[^\"]*\"|vendorHash = \"$HASH\"|" flake.nix
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "fix(flake): update vendorHash"
-          git push
+          if [ "$(gh api "repos/$REPO/branches/$BRANCH" -q .commit.sha)" != "$SHA" ]; then echo "branch moved since the hash was computed; its own run updates it"; exit 0; fi
+          gh api "repos/$REPO/contents/flake.nix?ref=$SHA" > file.json
+          jq -r .content file.json | base64 -d | sed "s|vendorHash = \"[^\"]*\"|vendorHash = \"$HASH\"|" > flake.nix
+          # sha: the API refuses the commit if flake.nix changed on the branch meanwhile.
+          gh api -X PUT "repos/$REPO/contents/flake.nix" -f branch="$BRANCH" -f sha="$(jq -r .sha file.json)" \
+            -f message="fix(flake): update vendorHash" -f content="$(base64 -w0 flake.nix)" \
+            -f 'committer[name]=github-actions[bot]' -f 'committer[email]=41898282+github-actions[bot]@users.noreply.github.com' \
+            -q .commit.sha
