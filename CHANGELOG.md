@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.12.1](https://github.com/ops-plane/ops/compare/v0.12.0...v0.12.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* **auth:** terraform login authorization codes are single-use ([7842293](https://github.com/ops-plane/ops/commit/7842293ee19b62b634bdafeb2c2452f41385aad8))
+* build with go1.26.11 for the net/http MaxBytesReader fix (GO-2026-6859) ([a0fef04](https://github.com/ops-plane/ops/commit/a0fef048c1e26c9f87f448a2da324f1ac92ba70e))
+* mask sensitive numbers and refuse sensitive values too short to mask ([809ea56](https://github.com/ops-plane/ops/commit/809ea56598f97230567c3674fd59047961128774))
+* refuse AUTH_DEV_USER unless PUBLIC_URL is localhost or AUTH_DEV_USER_ALLOW_REMOTE=true ([99d0969](https://github.com/ops-plane/ops/commit/99d0969e6a9863f17434ad33db4ed53304a9aec2))
+* reserve proxy, CA and config-file environment variables in workspace variables ([1f35014](https://github.com/ops-plane/ops/commit/1f35014f5a92c6c800756f70e2e6a1dcc251223c))
+* send HSTS and use a __Host- session cookie with an https PUBLIC_URL ([ec23d09](https://github.com/ops-plane/ops/commit/ec23d099e94a0e117557708e07678579d72aef72))
+* set read and idle timeouts on the HTTP servers ([ec3b160](https://github.com/ops-plane/ops/commit/ec3b160c066701b47bd8339db2b3931c926abf75))
+* **vcs:** keep writes under the API root, refuse non-https redirects, cap archive entries ([9d7a4a3](https://github.com/ops-plane/ops/commit/9d7a4a32bd542625bee1d5b49ad38284ab3f9a61))
+
 ## [0.12.0](https://github.com/ops-plane/ops/compare/v0.11.1...v0.12.0) (2026-11-17)
 
 
