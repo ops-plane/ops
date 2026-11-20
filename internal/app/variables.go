@@ -138,7 +138,10 @@ func reservedEnv(key string) bool {
 	k := strings.ToUpper(key)
 	switch k {
 	case "PATH", "HOME", "SHELL", "TMPDIR", "BASH_ENV", "ENV", "NODE_OPTIONS", "PERL5OPT", "RUBYOPT",
-		"SHELLOPTS", "BASHOPTS", "PS4", "PROMPT_COMMAND": // SHELLOPTS=xtrace + PS4='$(…)' runs code in bash
+		"SHELLOPTS", "BASHOPTS", "PS4", "PROMPT_COMMAND", // SHELLOPTS=xtrace + PS4='$(…)' runs code in bash
+		// redirect or intercept the runner's traffic, or point tools at other config files
+		"HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "SSL_CERT_FILE", "SSL_CERT_DIR", "XDG_CONFIG_HOME",
+		"TERRAFORM_CONFIG", "GODEBUG", "GCONV_PATH", "KUBECONFIG", "AWS_CONFIG_FILE":
 		return true
 	}
 	for _, p := range []string{"LD_", "DYLD_", "GIT_", "SSH_", "OPS_", "PYTHON"} {

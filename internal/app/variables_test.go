@@ -203,3 +203,16 @@ func TestHCLVariables(t *testing.T) {
 		t.Fatalf("vars: %#v %v", vars, err)
 	}
 }
+
+func TestReservedEnv(t *testing.T) {
+	for _, k := range []string{"PATH", "LD_PRELOAD", "TF_LOG", "https_proxy", "HTTP_PROXY", "SSL_CERT_FILE", "TERRAFORM_CONFIG", "KUBECONFIG", "AWS_CONFIG_FILE"} {
+		if !reservedEnv(k) {
+			t.Errorf("%s must be reserved", k)
+		}
+	}
+	for _, k := range []string{"OPS_DEBUG", "ARM_CLIENT_ID", "AWS_REGION", "GOOGLE_PROJECT"} {
+		if reservedEnv(k) {
+			t.Errorf("%s must be allowed", k)
+		}
+	}
+}
