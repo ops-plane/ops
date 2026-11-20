@@ -69,6 +69,9 @@ func TestVariableAccess(t *testing.T) {
 	if err := a.SetWorkspaceVariable(ctx, owner, ws.Name, VariableInput{Category: "env", Key: "PATH"}); !isValidation(err) {
 		t.Errorf("a reserved name: %v", err)
 	}
+	if err := a.SetWorkspaceVariable(ctx, owner, ws.Name, VariableInput{Category: "env", Key: "PIN", Value: " 12 ", Sensitive: true}); !isValidation(err) {
+		t.Errorf("a sensitive value too short to mask: %v", err)
+	}
 	if err := a.SetWorkspaceVariable(ctx, owner, ws.Name, secret); err != nil {
 		t.Fatal(err)
 	}

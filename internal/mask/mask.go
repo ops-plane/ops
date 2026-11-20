@@ -12,6 +12,10 @@ import (
 // Sensitive replaces an output value that contains a known secret.
 const Sensitive = "(sensitive)"
 
+// MinLen is the shortest secret masked (not counting spaces): shorter values (true, 1, eu) would mask
+// ordinary output, so sensitive values must be at least this long.
+const MinLen = 4
+
 // Masker holds the strings to hide, longest first.
 type Masker struct{ values []string }
 
@@ -29,7 +33,7 @@ func New(secrets []string) Masker {
 	slices.SortFunc(vs, func(a, b string) int { return len(b) - len(a) })
 	var m Masker
 	for _, v := range slices.Compact(vs) {
-		if len(strings.TrimSpace(v)) >= 4 { // shortcut: shorter values (true, 1, eu) would mask ordinary output; they stay visible
+		if len(strings.TrimSpace(v)) >= MinLen {
 			m.values = append(m.values, v)
 		}
 	}

@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/ops-plane/ops/internal/mask"
 	"github.com/ops-plane/ops/internal/storage"
 	"github.com/ops-plane/ops/internal/templates"
 )
@@ -53,6 +54,10 @@ func (a *App) SealInputs(t templates.Template, raw map[string]string, vals, old 
 				continue
 			}
 			delete(errs, in.Name) // "required": it has a value
+		} else if typed := strings.TrimSpace(raw[in.Name]); typed != "" && len(typed) < mask.MinLen {
+			errs[in.Name] = fmt.Sprintf("a sensitive value must be at least %d characters, or it can't be hidden in logs", mask.MinLen)
+			delete(vals, in.Name)
+			continue
 		}
 		if IsSealed(v) {
 			vals[in.Name] = v
@@ -92,8 +97,12 @@ func (a *App) OpenInputs(inputs map[string]any, wsID uuid.UUID, module string) (
 		if err := json.Unmarshal([]byte(plain), &val); err != nil {
 			return nil, nil, fmt.Errorf("input %s: %w", k, err)
 		}
-		if str, ok := val.(string); ok { // shortcut: only string values are masked; numbers and lists print in other forms
-			secrets = append(secrets, str)
+		// shortcut: lists, objects and booleans stay unmasked (they print in other forms); mask their elements if needed
+		switch val := val.(type) {
+		case string:
+			secrets = append(secrets, val)
+		case float64:
+			secrets = append(secrets, plain) // a number as JSON writes it, which is how Terraform prints whole numbers
 		}
 		out[k] = val
 	}
