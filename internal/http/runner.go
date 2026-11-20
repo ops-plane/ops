@@ -136,6 +136,7 @@ func (s *Server) liveResult(w http.ResponseWriter, r *http.Request, cancel bool,
 
 func (s *Server) jobFinish(w http.ResponseWriter, r *http.Request) {
 	var req runnerapi.FinishRequest
+	slowBody(w)
 	// outputs and the resource index of a large state can be big: the same limit as a job
 	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, runnerapi.MaxJobSize)).Decode(&req); err != nil {
 		writeErrors(w, http.StatusBadRequest, fmt.Sprintf("invalid finish request (at most %d MB): %v", runnerapi.MaxJobSize>>20, err))
@@ -151,6 +152,7 @@ func (s *Server) jobFinish(w http.ResponseWriter, r *http.Request) {
 
 // putArtifact stores a plan phase's output; only the planning run may write its own artifacts.
 func (s *Server) putArtifact(w http.ResponseWriter, r *http.Request) {
+	slowBody(w)
 	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, app.MaxArtifactSize))
 	if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 		writeErrors(w, http.StatusRequestEntityTooLarge, fmt.Sprintf("artifacts are limited to %d MB", app.MaxArtifactSize>>20))

@@ -16,6 +16,8 @@ Every way to deploy runs the same two parts: the **app** (web UI, module registr
 
 Each runner has its own token, its `OPS_RUNNER_TOKEN`: create one with `ops runner-token <name>` (with the app's settings) or under **Settings → Runners**. See [Runners]({{< relref "/docs/config/runners" >}}).
 
+Put the app behind a reverse proxy or ingress that terminates TLS and rate-limits requests: OPS limits body sizes and slow requests, but not request rates (e.g. on `/auth/*`, `/oauth/token` and `/api/state/v1`).
+
 Every setting is listed in the [option reference]({{< relref "/docs/config/reference" >}}).
 
 {{< cards >}}

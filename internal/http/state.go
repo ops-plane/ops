@@ -60,6 +60,7 @@ func (s *Server) getState(w http.ResponseWriter, r *http.Request, run app.StateR
 }
 
 func (s *Server) putState(w http.ResponseWriter, r *http.Request, run app.StateRun) {
+	slowBody(w)
 	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, app.MaxStateSize))
 	if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 		http.Error(w, fmt.Sprintf("state larger than %d MB", app.MaxStateSize>>20), http.StatusRequestEntityTooLarge)

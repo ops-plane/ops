@@ -56,6 +56,7 @@ func readForm(w http.ResponseWriter, r *http.Request) (url.Values, bool) {
 // removes r.MultipartForm's files. A body over max is left to the page to say (tooLarge: the user
 // picked too big a file); any other unreadable body is answered (400) and ok is false.
 func readMultipart(w http.ResponseWriter, r *http.Request, max int64) (f url.Values, tooLarge, ok bool) {
+	slowBody(w)
 	r.Body = http.MaxBytesReader(w, r.Body, max)
 	err := r.ParseMultipartForm(1 << 20)
 	if _, tooLarge = errors.AsType[*http.MaxBytesError](err); tooLarge {
