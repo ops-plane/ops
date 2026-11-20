@@ -27,6 +27,7 @@ const (
 	maxJSON      = 10 << 20
 	maxDownload  = 50 << 20  // a repo archive may be larger than the module archive we keep
 	maxExtracted = 200 << 20 // guards against zip/gzip bombs
+	maxEntries   = 100000    // and against millions of empty files
 )
 
 // Providers lists the supported providers with their default API root ("" = must be given).
@@ -44,12 +45,26 @@ type Client struct {
 	pauses map[string]time.Time // token hash + API root -> when the provider wants polling to resume
 }
 
-// NewClient returns a client sending through hc; nil uses a client with a 2 minute timeout.
+// NewClient returns a client sending through (a copy of) hc that only follows https redirects;
+// nil uses a client with a 2 minute timeout.
 func NewClient(hc *http.Client) *Client {
-	if hc == nil {
-		hc = &http.Client{Timeout: 2 * time.Minute}
+	c := http.Client{Timeout: 2 * time.Minute}
+	if hc != nil {
+		c = *hc
 	}
-	return &Client{http: hc, cache: map[string]cachedResponse{}, pauses: map[string]time.Time{}}
+	c.CheckRedirect = httpsRedirects
+	return &Client{http: &c, cache: map[string]cachedResponse{}, pauses: map[string]time.Time{}}
+}
+
+// httpsRedirects is http.Client's default redirect policy, refusing anything but https.
+func httpsRedirects(req *http.Request, via []*http.Request) error {
+	if req.URL.Scheme != "https" {
+		return fmt.Errorf("vcs: refusing redirect to %s", req.URL.Redacted())
+	}
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+	return nil
 }
 
 // Conn is a usable connection: provider, API root and plain token, sending through its client.
@@ -218,24 +233,32 @@ func later(a, b time.Time) time.Time {
 // errNoClient: a Conn built as a literal, not by Client.Conn (a bug).
 var errNoClient = errors.New("vcs: connection without a client (build it with Client.Conn)")
 
+// target checks that u is under the connection's own API root (https, validated by NormalizeURL):
+// a URL built from a repo, ref or path can't escape to another host.
+func (c Conn) target(u string) (string, error) {
+	base, err := NormalizeURL(c.Provider, c.BaseURL)
+	if err != nil {
+		return "", err
+	}
+	if !strings.HasPrefix(u, base+"/") {
+		return "", fmt.Errorf("vcs: refusing request outside %s", base)
+	}
+	t, err := url.Parse(u)
+	if err != nil || t.Scheme != "https" || t.User != nil {
+		return "", fmt.Errorf("vcs: refusing request outside %s", base)
+	}
+	return t.String(), nil
+}
+
 func (c Conn) get(ctx context.Context, u string, limit int64, conditional bool) ([]byte, error) {
 	if c.client == nil {
 		return nil, errNoClient
 	}
-	// Only ever call the connection's own API root (https, validated by NormalizeURL): a URL
-	// built from a repo, ref or path can't escape to another host.
-	base, err := NormalizeURL(c.Provider, c.BaseURL)
+	target, err := c.target(u)
 	if err != nil {
 		return nil, err
 	}
-	if !strings.HasPrefix(u, base+"/") {
-		return nil, fmt.Errorf("vcs: refusing request outside %s", base)
-	}
-	target, err := url.Parse(u)
-	if err != nil || target.Scheme != "https" || target.User != nil {
-		return nil, fmt.Errorf("vcs: refusing request outside %s", base)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, target.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, target, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,11 +320,15 @@ func (c Conn) send(ctx context.Context, method, u string, body, out any) error {
 	if c.client == nil {
 		return errNoClient
 	}
+	target, err := c.target(u)
+	if err != nil {
+		return err
+	}
 	b, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequestWithContext(ctx, method, u, bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, method, target, bytes.NewReader(b))
 	if err != nil {
 		return err
 	}

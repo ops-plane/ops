@@ -277,3 +277,40 @@ func TestConnWithoutClient(t *testing.T) {
 		t.Fatalf("got %v", err)
 	}
 }
+
+// Writes stay under the API root like reads, and redirects to plain http are refused.
+func TestSendAndRedirectLimits(t *testing.T) {
+	t.Parallel()
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "http://internal.example/", http.StatusFound)
+	}))
+	defer srv.Close()
+	c := NewClient(srv.Client()).Conn(GitHub, srv.URL, "t")
+	if err := c.send(t.Context(), http.MethodPost, "https://elsewhere.example/x", nil, nil); err == nil || !strings.Contains(err.Error(), "refusing request outside") {
+		t.Fatalf("send outside the API root: %v", err)
+	}
+	if _, err := c.get(t.Context(), srv.URL+"/x", maxJSON, false); err == nil || !strings.Contains(err.Error(), "refusing redirect") {
+		t.Fatalf("redirect to http: %v", err)
+	}
+}
+
+func TestArchiveEntryCap(t *testing.T) {
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	for i := range maxEntries + 1 {
+		if _, err := zw.CreateHeader(&zip.FileHeader{Name: strconv.Itoa(i), Method: zip.Store}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	zw.Close()
+	if _, err := readZip(buf.Bytes()); !errors.Is(err, errTooManyEntries) {
+		t.Fatalf("zip: %v", err)
+	}
+	many := map[string]string{}
+	for i := range maxEntries + 1 {
+		many[strconv.Itoa(i)] = ""
+	}
+	if _, err := readTarGz(registrytest.TarGz(t, many)); !errors.Is(err, errTooManyEntries) {
+		t.Fatalf("tar.gz: %v", err)
+	}
+}
