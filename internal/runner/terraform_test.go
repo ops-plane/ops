@@ -58,7 +58,7 @@ resource "terraform_data" "slow" {
   }
 }`)
 	f.do(t, r, job("c", "plan", "apply", src, nil))
-	f.cancelAfter = "==> terraform apply"
+	f.cancelAfter = "Provisioning with 'local-exec'" // the resource exists now; "==> terraform apply" can come first on a slow machine
 	start := time.Now()
 	res, logs := f.do(t, r, job("c", "apply", "apply", src, nil))
 	if res.Status != "canceled" || !strings.Contains(res.Message, "canceled by a user") {
