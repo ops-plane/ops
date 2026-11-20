@@ -306,3 +306,11 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name
 
 // errRender is logged for a template that failed to execute (tests fail on it).
 const errRender = "render page"
+
+// uploadTimeout replaces the server's ReadTimeout for large bodies, once the request is authenticated.
+const uploadTimeout = 15 * time.Minute
+
+// slowBody gives an authenticated request's large body uploadTimeout to arrive.
+func slowBody(w http.ResponseWriter) {
+	http.NewResponseController(w).SetReadDeadline(time.Now().Add(uploadTimeout))
+}

@@ -441,6 +441,7 @@ func (s *Server) cloudCreateState(w http.ResponseWriter, r *http.Request) {
 		} `json:"data"`
 	}
 	// base64 state plus its JSON form
+	slowBody(w)
 	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 3*app.MaxStateSize)).Decode(&body); err != nil {
 		if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 			writeAPIError(w, http.StatusRequestEntityTooLarge, fmt.Sprintf("state larger than %d MB", app.MaxStateSize>>20))

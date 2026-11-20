@@ -398,13 +398,16 @@ func serve(log *slog.Logger) error {
 		if err != nil {
 			return fmt.Errorf("METRICS_ADDR: %w", err)
 		}
-		msrv := &http.Server{Handler: server.MetricsHandler(), ReadHeaderTimeout: 10 * time.Second}
+		msrv := &http.Server{Handler: server.MetricsHandler(), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: time.Minute, IdleTimeout: 2 * time.Minute}
 		go msrv.Serve(ln)
 		defer msrv.Close()
 		log.Info("metrics listening", "addr", cfg.MetricsAddr)
 	}
 	server.Stopping = ctx // ends log streams and runner long-polls on SIGTERM; other requests drain
-	srv := &http.Server{Addr: cfg.Addr, Handler: server.Handler(), ReadHeaderTimeout: 10 * time.Second}
+	// ReadTimeout bounds reading the request (net/http lifts it once the body is read, so streams and long-polls are unaffected); uploads extend it (slowBody).
+	// No WriteTimeout: large state, plan and archive downloads would each have to lift it.
+	srv := &http.Server{Addr: cfg.Addr, Handler: server.Handler(), ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout: time.Minute, IdleTimeout: 2 * time.Minute}
 	drained := make(chan struct{})
 	go func() {
 		defer close(drained)

@@ -3,6 +3,7 @@ package httpserver
 import (
 	"context"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -415,3 +416,30 @@ var testKeys = func() *secrets.Keyring {
 	}
 	return k
 }()
+
+func TestSlowBodyOutlastsReadTimeout(t *testing.T) {
+	srv := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		slowBody(w)
+		if _, err := io.ReadAll(r.Body); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+	}))
+	srv.Config.ReadTimeout = 50 * time.Millisecond
+	srv.Start()
+	defer srv.Close()
+	pr, pw := io.Pipe()
+	go func() {
+		pw.Write([]byte("a"))
+		time.Sleep(200 * time.Millisecond) // past ReadTimeout
+		pw.Write([]byte("b"))
+		pw.Close()
+	}()
+	resp, err := http.Post(srv.URL, "application/octet-stream", pr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status %d", resp.StatusCode)
+	}
+}
