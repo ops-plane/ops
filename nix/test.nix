@@ -11,7 +11,7 @@ self: {
     ];
     services.ops = {
       enable = true;
-      publicUrl = "http://ops.test";
+      publicUrl = "http://ops.localhost"; # devUser needs a localhost PUBLIC_URL
       secretKeyFile = "/run/ops-secret-key";
       runnerTokenFile = "/run/ops-runner-token"; # registered as runner "machine"; the runner's tokenFile defaults to it
       devUser = "admin@test";
