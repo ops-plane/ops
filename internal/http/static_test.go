@@ -38,7 +38,7 @@ func strictHTML(t *testing.T, page, body string) {
 
 // Every static file a page links is served, typed and cached for good; another hash is not found.
 func TestStatic(t *testing.T) {
-	s := New(&app.App{Log: testLog(t)}, devAuth(t, nil, "admin@example.com", true), Features{Deployments: true})
+	s := New(&app.App{Log: testLog(t), Registry: testReg}, devAuth(t, nil, "admin@example.com", true), Features{Deployments: true})
 	w := httptest.NewRecorder()
 	s.render(w, httptest.NewRequest("GET", "/", nil), 200, "authorize.html", &authorizePage{})
 	urls := staticURL.FindAllString(w.Body.String(), -1)
@@ -52,7 +52,7 @@ func TestStatic(t *testing.T) {
 		h.ServeHTTP(w, httptest.NewRequest("GET", u, nil))
 		ct := w.Header().Get("Content-Type")
 		if w.Code != 200 || w.Body.Len() == 0 || !strings.Contains(ct, types[u[strings.LastIndex(u, "."):]]) ||
-			w.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
+			w.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || w.Header().Get("Strict-Transport-Security") != "max-age=31536000" {
 			t.Errorf("%s: %d, %d bytes, %q, %q", u, w.Code, w.Body.Len(), ct, w.Header().Get("Cache-Control"))
 		}
 	}

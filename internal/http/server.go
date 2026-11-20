@@ -224,6 +224,9 @@ func (s *Server) logRequests(next http.Handler) http.Handler {
 		w.Header().Set("Content-Security-Policy", csp("'self'"))
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Referrer-Policy", "same-origin")
+		if s.App.Registry.PublicURL.Scheme == "https" {
+			w.Header().Set("Strict-Transport-Security", "max-age=31536000")
+		}
 		next.ServeHTTP(w, r)
 		s.App.Log.Info("request", "method", r.Method, "path", r.URL.Path, "duration", time.Since(start))
 	})

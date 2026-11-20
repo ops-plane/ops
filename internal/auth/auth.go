@@ -25,8 +25,7 @@ import (
 )
 
 const (
-	sessionCookie = "ops_session"
-	loginCookie   = "ops_login"
+	loginCookie = "ops_login"
 	// IdP removals apply at the next login (≤ sessionTTL), or at once when the session is ended
 	// (logout, log out everywhere, an admin). The role follows ADMIN_EMAILS and ADMIN_GROUPS.
 	sessionTTL = 12 * time.Hour
@@ -162,13 +161,13 @@ func (a *Auth) Routes(mux interface {
 
 // logout deletes the session, so a copy of the cookie kept elsewhere stops working too.
 func (a *Auth) logout(w http.ResponseWriter, r *http.Request) {
-	if c, err := r.Cookie(sessionCookie); err == nil && c.Value != "" && a.dev == nil {
+	if c, err := r.Cookie(a.sessionCookie()); err == nil && c.Value != "" && a.dev == nil {
 		if err := a.store.DeleteSession(r.Context(), c.Value); err != nil {
 			http.Error(w, "logout failed, please try again", http.StatusInternalServerError)
 			return
 		}
 	}
-	a.setCookie(w, sessionCookie, "", "/", -1)
+	a.setCookie(w, a.sessionCookie(), "", "/", -1)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -178,7 +177,7 @@ func (a *Auth) User(r *http.Request) (User, error) {
 	if a.dev != nil {
 		return *a.dev, nil
 	}
-	c, err := r.Cookie(sessionCookie)
+	c, err := r.Cookie(a.sessionCookie())
 	if err != nil || c.Value == "" {
 		return User{}, ErrNoSession
 	}
@@ -310,7 +309,7 @@ func (a *Auth) callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	SetPrincipal(r.Context(), u, "user")
-	a.setCookie(w, sessionCookie, token, "/", int(sessionTTL.Seconds()))
+	a.setCookie(w, a.sessionCookie(), token, "/", int(sessionTTL.Seconds()))
 	http.Redirect(w, r, st.Next, http.StatusSeeOther)
 }
 
@@ -367,6 +366,14 @@ func (a *Auth) readCookie(r *http.Request, name string, v any) bool {
 		return false
 	}
 	return json.Unmarshal(b, v) == nil
+}
+
+// sessionCookie is the session cookie's name: with https, __Host- binds it to this host (Secure, Path=/, no Domain).
+func (a *Auth) sessionCookie() string {
+	if a.secure {
+		return "__Host-ops_session"
+	}
+	return "ops_session"
 }
 
 func (a *Auth) setCookie(w http.ResponseWriter, name, value, path string, maxAge int) {

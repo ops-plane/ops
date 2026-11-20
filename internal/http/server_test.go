@@ -284,7 +284,7 @@ func TestLogout(t *testing.T) {
 	}
 	var tok string
 	for _, c := range session {
-		if c.Name == "ops_session" {
+		if c.Name == "__Host-ops_session" {
 			tok = c.Value
 		}
 	}
@@ -301,7 +301,7 @@ func TestLogout(t *testing.T) {
 		t.Fatalf("logout: %d %q", rec.Code, rec.Header().Get("Location"))
 	}
 	cleared := rec.Result().Cookies()
-	if len(cleared) != 1 || cleared[0].Name != "ops_session" || cleared[0].Value != "" || cleared[0].MaxAge >= 0 {
+	if len(cleared) != 1 || cleared[0].Name != "__Host-ops_session" || cleared[0].Value != "" || cleared[0].MaxAge >= 0 {
 		t.Fatalf("logout must clear the session cookie: %+v", cleared)
 	}
 	// a copy of the cookie (kept elsewhere) no longer works; the other browser still does

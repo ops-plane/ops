@@ -201,8 +201,11 @@ func TestSessionCookie(t *testing.T) {
 	a, m := newOIDC(t, is)
 	rec := login(t, a, is, "/", false)
 	c := rec.Result().Cookies()
-	if len(c) != 2 || c[1].Name != sessionCookie || !c[1].HttpOnly || !c[1].Secure || c[1].SameSite != http.SameSiteLaxMode || c[1].Path != "/" {
+	if len(c) != 2 || c[1].Name != "__Host-ops_session" || !c[1].HttpOnly || !c[1].Secure || c[1].SameSite != http.SameSiteLaxMode || c[1].Path != "/" {
 		t.Fatalf("session cookie: %+v", c)
+	}
+	if n := (&Auth{}).sessionCookie(); n != "ops_session" { // plain http: browsers refuse __Host- without Secure
+		t.Fatalf("http session cookie: %s", n)
 	}
 	if strings.Contains(c[1].Value, ".") || len(m.sessions) != 1 {
 		t.Fatalf("the cookie must be an opaque token of a stored session: %q, %d sessions", c[1].Value, len(m.sessions))
@@ -229,7 +232,7 @@ func TestSessionCookie(t *testing.T) {
 	}
 	for _, v := range []string{"", "forged"} {
 		req := httptest.NewRequest("GET", "/", nil)
-		req.AddCookie(&http.Cookie{Name: sessionCookie, Value: v})
+		req.AddCookie(&http.Cookie{Name: a.sessionCookie(), Value: v})
 		if _, err := a.User(req); err != ErrNoSession {
 			t.Fatalf("unknown token %q: %v", v, err)
 		}
