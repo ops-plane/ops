@@ -46,7 +46,7 @@
       # Go prebuilt on cache.nixos.org: keep flake.lock fresh so it has the stdlib security fixes.
       ops = pkgs.buildGoModule.override {go = goFor system;} {
         pname = "ops";
-        version = "0.12.1"; # x-release-please-version
+        version = "0.12.2"; # x-release-please-version
         src = self;
         vendorHash = "sha256-esaXMMp88VvkqXZw4m1nwBDbcU6pluc3Fp7Rr71qy1g="; # update after go.mod changes
         subPackages = ["cmd/ops"];

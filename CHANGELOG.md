@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/ops-plane/ops/compare/v0.12.1...v0.12.2) (2026-11-21)
+
+
+### Bug Fixes
+
+* build with go1.26.11 from nixpkgs-unstable until nixos-26.05 has it (GO-2026-6859) ([001f550](https://github.com/ops-plane/ops/commit/001f550dbcac72645904a19904c7bfe3803c5503))
+
 ## [0.12.1](https://github.com/ops-plane/ops/compare/v0.12.0...v0.12.1) (2026-11-20)
 
 
