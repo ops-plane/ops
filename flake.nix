@@ -2,13 +2,17 @@
   description = "On-demand Provisioning Service (OPS)";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+  # shortcut: only Go comes from unstable (go1.26.11, GO-2026-6859); drop it once nixos-26.05 has go >= 1.26.11.
+  inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
   }: let
     forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     pkgsFor = system: nixpkgs.legacyPackages.${system};
+    goFor = system: nixpkgs-unstable.legacyPackages.${system}.go_1_26;
     # HashiCorp's release binary pinned by checksum, in the images, CI and the dev shell alike: nixpkgs' terraform
     # lags behind. The version is .terraform-version (also read by CI and `just test-linux`); update the checksums with it.
     terraformFor = pkgs: system: let
@@ -39,8 +43,8 @@
   in {
     packages = forEachSystem (system: let
       pkgs = pkgsFor system;
-      # nixpkgs' go, prebuilt on cache.nixos.org: keep flake.lock fresh so it has the stdlib security fixes.
-      ops = pkgs.buildGoModule {
+      # Go prebuilt on cache.nixos.org: keep flake.lock fresh so it has the stdlib security fixes.
+      ops = pkgs.buildGoModule.override {go = goFor system;} {
         pname = "ops";
         version = "0.12.1"; # x-release-please-version
         src = self;
@@ -144,7 +148,7 @@
       # postgres runs project-local on a unix socket in .devdata/ (no port clash); see justfile.
     in {
       default = pkgs.mkShell {
-        packages = with pkgs; [go gopls gotools sqlc postgresql_17 just curl docker-client terraform infracost hugo];
+        packages = with pkgs; [(goFor system) gopls gotools sqlc postgresql_17 just curl docker-client terraform infracost hugo];
         shellHook = ''
           export PGHOST="$PWD/.devdata"
           export PGDATA="$PGHOST/pg"
