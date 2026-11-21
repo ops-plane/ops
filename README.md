@@ -34,7 +34,7 @@ Working on OPS itself? `just check` runs the tests and a smoke test, and `just d
 
 ## Where it's at
 
-OPS is at 0.12.1<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading](https://ops-plane.github.io/ops/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
+OPS is at 0.12.2<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading](https://ops-plane.github.io/ops/docs/install/upgrading/). What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Documentation
 

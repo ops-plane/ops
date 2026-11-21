@@ -19,4 +19,4 @@ OPS is one Go binary (server and runner modes) that needs PostgreSQL and, for st
 
 ## Where it's at
 
-OPS is at 0.12.1<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading]({{< relref "/docs/install/upgrading" >}}). What's planned is on the [roadmap]({{< relref "/docs/roadmap" >}}), and what changed in each release in the [release notes]({{< relref "/docs/install/release-notes" >}}).
+OPS is at 0.12.2<!-- x-release-please-version --> and heading for 1.0. Versions 0.6 (a rebuild) and 0.12 (one database schema) need a fresh install: see [Upgrading]({{< relref "/docs/install/upgrading" >}}). What's planned is on the [roadmap]({{< relref "/docs/roadmap" >}}), and what changed in each release in the [release notes]({{< relref "/docs/install/release-notes" >}}).
