@@ -48,7 +48,7 @@
         pname = "ops";
         version = "0.12.2"; # x-release-please-version
         src = self;
-        vendorHash = "sha256-SUI9QdVDHvvADfVo3UFjIxsgbBQdCJV153lIhVf0QOQ="; # update after go.mod changes
+        vendorHash = "sha256-Ry5j8gLFSg+gYBFnOPbTSL9zvlGMkbCcY0iZ8h5xucU="; # update after go.mod changes
         subPackages = ["cmd/ops"];
         # DB tests skip themselves without TEST_DATABASE_URL; the rest use catalog/ from src. The package
         # ships no templates: they come from a Git repository (Settings → Templates), or TEMPLATES_DIR.
