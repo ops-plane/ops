@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.12.3](https://github.com/ops-plane/ops/compare/v0.12.2...v0.12.3) (2026-11-26)
+
+
+### Bug Fixes
+
+* **deps:** bump go.opentelemetry.io/otel/sdk from 1.46.0 to 1.47.0 ([a306f1f](https://github.com/ops-plane/ops/commit/a306f1fedec8af43ee9eb16eed49ecfc129ebda9))
+* **deps:** bump the go group across 1 directory with 2 updates ([dd5f414](https://github.com/ops-plane/ops/commit/dd5f41493c5a47bd7b34dc236dae5ca0a9cd3214))
+* **flake:** update vendorHash ([390b06a](https://github.com/ops-plane/ops/commit/390b06a8d07447c7d23f16d3eaadb1a900b6f88c))
+* **flake:** update vendorHash ([8247d17](https://github.com/ops-plane/ops/commit/8247d170a6df0e79f82b286fa4eefb68bed1b325))
+
 ## [0.12.2](https://github.com/ops-plane/ops/compare/v0.12.1...v0.12.2) (2026-11-21)
 
 
