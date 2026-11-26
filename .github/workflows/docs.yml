@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0 # git history for "last updated" dates
           persist-credentials: false
       # Hugo modules (the Hextra theme) are fetched with go.
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version: 1.26.x
           cache: false # no go.sum at the repo root for this job
